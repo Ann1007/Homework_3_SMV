@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface NaturalPersonResponseRepository extends JpaRepository<ResponseWithFine, Integer> {
+public interface ResponseRepository extends JpaRepository<ResponseWithFine, Long> {
 
     ResponseWithFine findBySts(String sts);
 }

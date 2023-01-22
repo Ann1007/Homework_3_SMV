@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface NaturalPersonInfoRepository extends JpaRepository<InfoOfFineNaturalPerson, Integer> {
+public interface NaturalPersonInfoRepository extends JpaRepository<InfoOfFineNaturalPerson, Long> {
 
     InfoOfFineNaturalPerson findBySts(String sts);
 

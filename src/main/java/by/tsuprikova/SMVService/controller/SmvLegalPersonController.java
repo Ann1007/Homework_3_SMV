@@ -1,7 +1,9 @@
 package by.tsuprikova.SMVService.controller;
 
+import by.tsuprikova.SMVService.model.LegalPersonRequest;
 import by.tsuprikova.SMVService.model.NaturalPersonRequest;
 import by.tsuprikova.SMVService.model.ResponseWithFine;
+import by.tsuprikova.SMVService.service.LegalPersonRequestService;
 import by.tsuprikova.SMVService.service.NaturalPersonRequestService;
 import by.tsuprikova.SMVService.service.ResponseService;
 import lombok.RequiredArgsConstructor;
@@ -12,36 +14,33 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/smv/natural_person")
-public class SmvNaturalPersonController {
+@RequestMapping("/smv/legal_person")
+@RequiredArgsConstructor
+public class SmvLegalPersonController {
 
     private final ResponseService responseService;
-    private final NaturalPersonRequestService naturalPersonRequestService;
+    private final LegalPersonRequestService legalPersonRequestService;
 
 
     @PostMapping("/save_request")
-    public ResponseEntity<Void> saveRequest(@RequestBody NaturalPersonRequest naturalPersonRequest) {
-        log.info("save natural person request with sts '{}'", naturalPersonRequest.getSts());
-        naturalPersonRequestService.saveRequestForFine(naturalPersonRequest);
+    public ResponseEntity<Void> saveRequest(@RequestBody LegalPersonRequest legalPersonRequest) {
+        log.info("save legal person request with sts '{}'", legalPersonRequest.getSts());
+        legalPersonRequestService.saveRequestForFine(legalPersonRequest);
         return new ResponseEntity<>(HttpStatus.CONTINUE);
 
     }
 
 
     @PostMapping("/get_response")
-    public ResponseEntity<ResponseWithFine> getResponse(@RequestBody NaturalPersonRequest naturalPersonRequest) {
+    public ResponseEntity<ResponseWithFine> getResponse(@RequestBody LegalPersonRequest legalPersonRequest) {
 
-        ResponseWithFine responseWithFine = responseService.getResponseForFine(naturalPersonRequest.getSts());
+        ResponseWithFine responseWithFine = responseService.getResponseForFine(legalPersonRequest.getSts());
         if (responseWithFine == null) {
-            log.info("natural person response is null for sts '{}'", naturalPersonRequest.getSts());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-
         }
 
         return new ResponseEntity<>(responseWithFine, HttpStatus.OK);
-
 
     }
 
@@ -50,10 +49,8 @@ public class SmvNaturalPersonController {
     public ResponseEntity<Void> deleteResponse(@PathVariable int id) {
 
         responseService.deleteResponseWithFine(id);
-        log.info("delete natural person response with id= {}",id);
+        log.info("delete legal person response with id= {}",id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
 }
-

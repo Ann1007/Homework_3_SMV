@@ -1,14 +1,19 @@
 package by.tsuprikova.SMVService.worker;
 
+import by.tsuprikova.SMVService.model.LegalPersonRequest;
 import by.tsuprikova.SMVService.model.NaturalPersonRequest;
 import by.tsuprikova.SMVService.model.ResponseWithFine;
 import by.tsuprikova.SMVService.model.InfoOfFineNaturalPerson;
+import by.tsuprikova.SMVService.repositories.LegalPersonRequestRepository;
 import by.tsuprikova.SMVService.repositories.NaturalPersonInfoRepository;
 import by.tsuprikova.SMVService.repositories.NaturalPersonRequestRepository;
-import by.tsuprikova.SMVService.repositories.NaturalPersonResponseRepository;
+import by.tsuprikova.SMVService.repositories.ResponseRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 
 @Component
@@ -18,7 +23,8 @@ public class Worker extends Thread {
 
     private NaturalPersonRequestRepository naturalPersonRequestRepository;
     private NaturalPersonInfoRepository infoRepository;
-    private NaturalPersonResponseRepository naturalPersonResponseRepository;
+    private ResponseRepository responseRepository;
+    private LegalPersonRequestRepository legalPersonRequestRepository;
 
 
     @Override
@@ -28,39 +34,72 @@ public class Worker extends Thread {
 
             log.info("Worker is working....");
             while (true) {
-                Integer minRequestId = naturalPersonRequestRepository.findMinId();
+                Long minNaturalPersonRequestId = naturalPersonRequestRepository.findMinId();
+                Long minLegalPersonRequestId = legalPersonRequestRepository.findMinId();
 
-                while (minRequestId == null) {
+                while (minNaturalPersonRequestId == null && minLegalPersonRequestId == null) {
                     try {
-                        Thread.sleep(3000);
+                        Thread.sleep(1000);
 
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    minRequestId = naturalPersonRequestRepository.findMinId();
-
+                    minNaturalPersonRequestId = naturalPersonRequestRepository.findMinId();
+                    minLegalPersonRequestId = legalPersonRequestRepository.findMinId();
                 }
 
-                NaturalPersonRequest naturalPersonRequest = naturalPersonRequestRepository.getById(minRequestId);
-                String sts = naturalPersonRequest.getSts();
-
-                InfoOfFineNaturalPerson infoOfFineNaturalPerson = infoRepository.findBySts(sts);
-
-                if (infoOfFineNaturalPerson != null) {
-
-                    ResponseWithFine response = naturalPersonResponseRepository.findBySts(sts);
-
-                    if (response == null) {
-                        response = new ResponseWithFine(0, infoOfFineNaturalPerson.getAmountOfAccrual(),
-                                infoOfFineNaturalPerson.getAmountOfPaid(), infoOfFineNaturalPerson.getNumberOfResolution(),
-                                sts, infoOfFineNaturalPerson.getDateOfResolution(), infoOfFineNaturalPerson.getArticleOfKOAP());
-                        naturalPersonResponseRepository.save(response);
-                    }
+                if (minNaturalPersonRequestId != null) {
+                    workWithNaturalPersonRepository(minNaturalPersonRequestId);
                 }
-                naturalPersonRequestRepository.delete(naturalPersonRequest);
+                if (minLegalPersonRequestId != null) {
+                    workWithLegalPersonRepository(minLegalPersonRequestId);
+                }
 
             }
         }
 
     }
+
+
+    private void workWithNaturalPersonRepository(long id) {
+
+        NaturalPersonRequest naturalPersonRequest = naturalPersonRequestRepository.getById(id);
+        String sts = naturalPersonRequest.getSts();
+
+        InfoOfFineNaturalPerson infoOfFineNaturalPerson = infoRepository.findBySts(sts);
+
+        if (infoOfFineNaturalPerson != null) {
+
+            ResponseWithFine response = responseRepository.findBySts(sts);
+
+            if (response == null) {
+                response = new ResponseWithFine(0, infoOfFineNaturalPerson.getAmountOfAccrual(),
+                        infoOfFineNaturalPerson.getAmountOfPaid(), infoOfFineNaturalPerson.getNumberOfResolution(),
+                        sts, infoOfFineNaturalPerson.getDateOfResolution(), infoOfFineNaturalPerson.getArticleOfKOAP());
+                responseRepository.save(response);
+            }
+        }
+        naturalPersonRequestRepository.delete(naturalPersonRequest);
+
+
+    }
+
+
+    private void workWithLegalPersonRepository(long id) {
+
+        LegalPersonRequest legalPersonRequest = legalPersonRequestRepository.getById(id);
+        String sts = legalPersonRequest.getSts();
+
+        ResponseWithFine response = responseRepository.findBySts(sts);
+        if (response == null) {
+            response = new ResponseWithFine(0, new BigDecimal(44), new BigDecimal(44),
+                    1212, legalPersonRequest.getSts(), new Date(), "32.1");
+
+            responseRepository.save(response);
+        }
+        legalPersonRequestRepository.delete(legalPersonRequest);
+
+    }
+
+
 }

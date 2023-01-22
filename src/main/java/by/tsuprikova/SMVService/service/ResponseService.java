@@ -2,10 +2,10 @@ package by.tsuprikova.SMVService.service;
 
 import by.tsuprikova.SMVService.model.ResponseWithFine;
 
-public interface NaturalPersonResponseService {
+public interface ResponseService {
 
     ResponseWithFine getResponseForFine(String sts);
-    void deleteResponseWithFine(int id);
+    void deleteResponseWithFine(long id);
 
 
 }

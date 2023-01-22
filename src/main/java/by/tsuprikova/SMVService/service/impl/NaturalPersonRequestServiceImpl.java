@@ -1,4 +1,4 @@
-package by.tsuprikova.SMVService.service.serviceImpl;
+package by.tsuprikova.SMVService.service.impl;
 
 
 import by.tsuprikova.SMVService.model.NaturalPersonRequest;

@@ -14,7 +14,7 @@ import java.util.Date;
 public class InfoOfFineNaturalPerson {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
     private BigDecimal amountOfAccrual;
     private BigDecimal amountOfPaid;
     private int numberOfResolution;
