@@ -1,0 +1,10 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <include file="01-changeset-natural-person-request-table.xml" relativeToChangelogFile="true"/>
+    <include file="01-changeset-legal-person-request-table.xml" relativeToChangelogFile="true"/>
+    <include file="01-changeset-natural-person-fine-info-table.xml" relativeToChangelogFile="true"/>
+    <include file="01-changeset-response-with-fine-table.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>

@@ -22,10 +22,12 @@ public class SmvNaturalPersonController {
 
 
     @PostMapping("/save_request")
-    public ResponseEntity<Void> saveRequest(@RequestBody NaturalPersonRequest naturalPersonRequest) {
-        log.info("save natural person request with sts '{}'", naturalPersonRequest.getSts());
-        naturalPersonRequestService.saveRequestForFine(naturalPersonRequest);
-        return new ResponseEntity<>(HttpStatus.CONTINUE);
+    public NaturalPersonRequest saveRequest(@RequestBody NaturalPersonRequest naturalPersonRequest) {
+
+        NaturalPersonRequest savedRequest=naturalPersonRequestService.saveRequestForFine(naturalPersonRequest);
+        log.info("save natural person request with sts '{}', id={} ", savedRequest.getSts(),savedRequest.getId());
+
+        return savedRequest;
 
     }
 

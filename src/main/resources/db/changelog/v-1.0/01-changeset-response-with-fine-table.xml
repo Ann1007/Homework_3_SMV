@@ -1,0 +1,44 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <changeSet id="1-create-response-with-fine-table" author="Ann">
+        <createTable tableName="response_with_fine"
+                     remarks="Создание таблицы для ответов для физ. и юр. лиц">
+
+            <column name="id" type="long" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="amount_of_accrual" type="decimal">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="amount_of_paid" type="decimal">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="number_of_resolution" type="int">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="sts" type="varchar(15)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="date_of_resolution" type="date">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="article_of_koap" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+    </changeSet>
+
+
+</databaseChangeLog>

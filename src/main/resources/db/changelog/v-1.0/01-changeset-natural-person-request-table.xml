@@ -1,0 +1,45 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <changeSet id="1-create-natural-person-request-table" author="Ann">
+        <createTable tableName="natural_person_request" remarks="Создание таблицы для физ. лиц запросов">
+            <column name="id" type="long" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="sts" type="varchar(15)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="insert-into-natural_person_request-sts" author="Ann">
+        <insert tableName="natural_person_request">
+            <column name="sts" value="78 ут 243401"/>
+        </insert>
+        <insert tableName="natural_person_request">
+            <column name="sts" value="74 ут 243333"/>
+        </insert>
+        <insert tableName="natural_person_request">
+            <column name="sts" value="76 ув 435654"/>
+        </insert>
+        <insert tableName="natural_person_request">
+            <column name="sts" value="56 ут 123456"/>
+        </insert>
+        <insert tableName="natural_person_request">
+            <column name="sts" value="43 ут 456323"/>
+        </insert>
+        <insert tableName="natural_person_request">
+            <column name="sts" value="89 ув 123456"/>
+        </insert>
+        <insert tableName="natural_person_request">
+            <column name="sts" value="90 ув 567890"/>
+        </insert>
+
+    </changeSet>
+
+
+</databaseChangeLog>

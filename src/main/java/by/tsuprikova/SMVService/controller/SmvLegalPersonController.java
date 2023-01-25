@@ -1,10 +1,8 @@
 package by.tsuprikova.SMVService.controller;
 
 import by.tsuprikova.SMVService.model.LegalPersonRequest;
-import by.tsuprikova.SMVService.model.NaturalPersonRequest;
 import by.tsuprikova.SMVService.model.ResponseWithFine;
 import by.tsuprikova.SMVService.service.LegalPersonRequestService;
-import by.tsuprikova.SMVService.service.NaturalPersonRequestService;
 import by.tsuprikova.SMVService.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,10 +22,11 @@ public class SmvLegalPersonController {
 
 
     @PostMapping("/save_request")
-    public ResponseEntity<Void> saveRequest(@RequestBody LegalPersonRequest legalPersonRequest) {
+    public LegalPersonRequest saveRequest(@RequestBody LegalPersonRequest legalPersonRequest) {
+
         log.info("save legal person request with sts '{}'", legalPersonRequest.getSts());
-        legalPersonRequestService.saveRequestForFine(legalPersonRequest);
-        return new ResponseEntity<>(HttpStatus.CONTINUE);
+        LegalPersonRequest savedRequest = legalPersonRequestService.saveRequestForFine(legalPersonRequest);
+        return savedRequest;
 
     }
 
@@ -37,6 +36,7 @@ public class SmvLegalPersonController {
 
         ResponseWithFine responseWithFine = responseService.getResponseForFine(legalPersonRequest.getSts());
         if (responseWithFine == null) {
+            log.info("legal person response is null for sts '{}'", legalPersonRequest.getSts());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -49,7 +49,7 @@ public class SmvLegalPersonController {
     public ResponseEntity<Void> deleteResponse(@PathVariable int id) {
 
         responseService.deleteResponseWithFine(id);
-        log.info("delete legal person response with id= {}",id);
+        log.info("delete legal person response with id= {}", id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

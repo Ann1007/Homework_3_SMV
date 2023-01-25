@@ -1,0 +1,42 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <changeSet id="1-create-natural-person-request-table" author="Ann">
+        <createTable tableName="legal_person_request" remarks="Создание таблицы для юр. лиц запросов">
+            <column name="id" type="long" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="sts" type="varchar(15)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="inn" type="long">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="insert-into-legal_person_request" author="Ann">
+
+        <insert tableName="legal_person_request">
+            <column name="sts" value="73 са 235678"/>
+            <column name="inn" value="2345676543"/>
+        </insert>
+
+        <insert tableName="legal_person_request">
+            <column name="sts" value="13 са 111118"/>
+            <column name="inn" value="2345676543"/>
+        </insert>
+
+        <insert tableName="legal_person_request">
+            <column name="sts" value="93 са 888678"/>
+            <column name="inn" value="2345676543"/>
+        </insert>
+
+    </changeSet>
+
+
+</databaseChangeLog>

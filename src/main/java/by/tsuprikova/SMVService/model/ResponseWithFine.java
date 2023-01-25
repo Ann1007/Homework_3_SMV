@@ -12,7 +12,7 @@ import java.util.Date;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "natural_person_response")
+@Table(name = "response_with_fine")
 public class ResponseWithFine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +22,7 @@ public class ResponseWithFine {
     private int numberOfResolution;
     private String sts;
     private Date dateOfResolution;
-    private String articleOfKOAP;
+    private String articleOfKoap;
 
 
 }

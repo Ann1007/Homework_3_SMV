@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "fine_info")
+@Table(name = "natural_person_fine_info")
 
 public class InfoOfFineNaturalPerson {
     @Id
@@ -20,7 +20,7 @@ public class InfoOfFineNaturalPerson {
     private int numberOfResolution;
     private String sts;
     private Date dateOfResolution;
-    private String articleOfKOAP;
+    private String articleOfKoap;
 
 
 }

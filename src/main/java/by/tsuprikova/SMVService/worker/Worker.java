@@ -75,7 +75,7 @@ public class Worker extends Thread {
             if (response == null) {
                 response = new ResponseWithFine(0, infoOfFineNaturalPerson.getAmountOfAccrual(),
                         infoOfFineNaturalPerson.getAmountOfPaid(), infoOfFineNaturalPerson.getNumberOfResolution(),
-                        sts, infoOfFineNaturalPerson.getDateOfResolution(), infoOfFineNaturalPerson.getArticleOfKOAP());
+                        sts, infoOfFineNaturalPerson.getDateOfResolution(), infoOfFineNaturalPerson.getArticleOfKoap());
                 responseRepository.save(response);
             }
         }

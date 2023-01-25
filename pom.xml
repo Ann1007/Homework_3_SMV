@@ -12,7 +12,7 @@
 	<artifactId>SMV-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>SMV-service</name>
-	<description>smv service for hometask3</description>
+	<description>smv service for home-task3</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
@@ -44,6 +44,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
 		</dependency>
 
 

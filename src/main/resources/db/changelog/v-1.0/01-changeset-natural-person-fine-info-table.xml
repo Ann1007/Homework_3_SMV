@@ -1,0 +1,54 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <changeSet id="1-create-natural-person-fine-info-table" author="Ann">
+        <createTable tableName="natural_person_fine_info"
+                     remarks="Создание таблицы для информации по штрафам для физ. лиц">
+
+            <column name="id" type="long" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="amount_of_accrual" type="decimal">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="amount_of_paid" type="decimal">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="number_of_resolution" type="int">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="sts" type="varchar(15)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="date_of_resolution" type="date">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="article_of_koap" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+    </changeSet>
+
+    <!--заполнение таблицы через sql файл-->
+    <changeSet id="insert-into-natural-person-fine-info" author="Ann">
+        <sqlFile dbms="h2"
+                 encoding="utf8"
+                 endDelimiter="\nGO"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"
+                 path="01-changeset-insert-natural-person-fine-info.sql"/>
+    </changeSet>
+
+</databaseChangeLog>

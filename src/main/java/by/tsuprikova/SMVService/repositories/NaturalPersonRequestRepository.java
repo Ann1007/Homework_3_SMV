@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface NaturalPersonRequestRepository extends JpaRepository<NaturalPersonRequest,Long> {
 
-    @Query(value = "SELECT MIN(id) FROM NATURAL_PERSON_REQUEST", nativeQuery = true)
+    @Query(value = "SELECT MIN(id) FROM natural_person_request", nativeQuery = true)
     Long findMinId();
 
 
