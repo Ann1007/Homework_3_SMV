@@ -1,18 +1,17 @@
 package by.tsuprikova.SMVService.model;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.util.UUID;
 
 @Data
-@Entity
-@Table(name = "natural_person_request")
+@NoArgsConstructor
+@AllArgsConstructor
 public class NaturalPersonRequest {
-    @Id
-    @org.hibernate.annotations.Type(type="org.hibernate.type.UUIDCharType")
+
     private UUID id;
     private String sts;
 

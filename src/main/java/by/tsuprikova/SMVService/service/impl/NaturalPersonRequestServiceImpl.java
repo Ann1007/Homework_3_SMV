@@ -18,7 +18,7 @@ public class NaturalPersonRequestServiceImpl implements NaturalPersonRequestServ
 
     @Override
     public NaturalPersonRequest saveRequestForFine(NaturalPersonRequest naturalPersonRequest) {
-        naturalPersonRequest.setId(UUID.randomUUID());
+
         return naturalPersonRequestRepository.save(naturalPersonRequest);
     }
 }

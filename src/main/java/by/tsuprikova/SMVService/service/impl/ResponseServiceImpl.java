@@ -25,9 +25,7 @@ public class ResponseServiceImpl implements ResponseService {
     @Override
     public ResponseWithFine getResponseForFine(String sts) {
 
-        ResponseWithFine responseWithFine = responseRepository.findBySts(sts);
-
-        return responseWithFine;
+        return responseRepository.findBySts(sts);
     }
 
 

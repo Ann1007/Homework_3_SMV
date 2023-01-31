@@ -26,8 +26,8 @@ public class SmvLegalPersonController {
     @PostMapping("/save_request")
     public LegalPersonRequest saveRequest(@RequestBody LegalPersonRequest legalPersonRequest) {
 
-        log.info("save legal person request with sts '{}'", legalPersonRequest.getSts());
         LegalPersonRequest savedRequest = legalPersonRequestService.saveRequestForFine(legalPersonRequest);
+        log.info("the legal person request was successfully saved with sts '{}', id={} ", savedRequest.getSts(), savedRequest.getId());
         return savedRequest;
 
     }
@@ -51,7 +51,7 @@ public class SmvLegalPersonController {
     public ResponseEntity<Void> deleteResponse(@PathVariable UUID id) {
 
         responseService.deleteResponseWithFine(id);
-        log.info("delete legal person response with id= {}", id);
+        log.info("legal person response was successfully deleted with id={}", id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

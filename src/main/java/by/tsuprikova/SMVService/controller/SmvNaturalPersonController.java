@@ -27,7 +27,7 @@ public class SmvNaturalPersonController {
     public NaturalPersonRequest saveRequest(@RequestBody NaturalPersonRequest naturalPersonRequest) {
 
         NaturalPersonRequest savedRequest = naturalPersonRequestService.saveRequestForFine(naturalPersonRequest);
-        log.info("save natural person request with sts '{}', id={} ", savedRequest.getSts(), savedRequest.getId());
+        log.info("save natural person request was successfully saved with sts '{}', id={}", savedRequest.getSts(), savedRequest.getId());
 
         return savedRequest;
 
@@ -54,7 +54,7 @@ public class SmvNaturalPersonController {
     public ResponseEntity<Void> deleteResponse(@PathVariable UUID id) {
 
         responseService.deleteResponseWithFine(id);
-        log.info("delete natural person response with id= {}", id);
+        log.info("natural person response was successfully deleted with id={}", id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

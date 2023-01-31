@@ -17,7 +17,7 @@ public class LegalPersonRequestServiceImpl  implements LegalPersonRequestService
 
     @Override
     public LegalPersonRequest saveRequestForFine(LegalPersonRequest legalPersonRequest) {
-        legalPersonRequest.setId(UUID.randomUUID());
+
         return legalPersonRequestRepository.save(legalPersonRequest);
     }
 }

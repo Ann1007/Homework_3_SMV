@@ -10,8 +10,6 @@ import by.tsuprikova.SMVService.repositories.NaturalPersonRequestRepository;
 import by.tsuprikova.SMVService.repositories.ResponseRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.type.UUIDBinaryType;
-import org.hibernate.type.UUIDCharType;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -37,7 +35,7 @@ public class Worker extends Thread {
 
             log.info("Worker is working....");
             while (true) {
-                UUID firstNaturalPersonRequestId =naturalPersonRequestRepository.findFirstId();
+                UUID firstNaturalPersonRequestId = naturalPersonRequestRepository.findFirstId();
                 UUID firstLegalPersonRequestId = legalPersonRequestRepository.findFirstId();
 
                 while (firstNaturalPersonRequestId == null && firstLegalPersonRequestId == null) {
@@ -76,13 +74,13 @@ public class Worker extends Thread {
             ResponseWithFine response = responseRepository.findBySts(sts);
 
             if (response == null) {
-                response = new ResponseWithFine(UUID.randomUUID(), infoOfFineNaturalPerson.getAmountOfAccrual(),
+                response = new ResponseWithFine(infoOfFineNaturalPerson.getAmountOfAccrual(),
                         infoOfFineNaturalPerson.getAmountOfPaid(), infoOfFineNaturalPerson.getNumberOfResolution(),
                         sts, infoOfFineNaturalPerson.getDateOfResolution(), infoOfFineNaturalPerson.getArticleOfKoap());
                 responseRepository.save(response);
             }
         }
-        naturalPersonRequestRepository.delete(naturalPersonRequest);
+        naturalPersonRequestRepository.delete(id);
 
 
     }
@@ -95,12 +93,13 @@ public class Worker extends Thread {
 
         ResponseWithFine response = responseRepository.findBySts(sts);
         if (response == null) {
-            response = new ResponseWithFine(UUID.randomUUID(), new BigDecimal(44), new BigDecimal(44),
+            response = new ResponseWithFine(new BigDecimal(44), new BigDecimal(44),
                     1212, legalPersonRequest.getSts(), new Date(), "32.1");
 
             responseRepository.save(response);
         }
-        legalPersonRequestRepository.delete(legalPersonRequest);
+        legalPersonRequestRepository.delete(id);
+
 
     }
 

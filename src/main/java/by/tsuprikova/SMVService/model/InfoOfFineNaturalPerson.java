@@ -1,21 +1,20 @@
 package by.tsuprikova.SMVService.model;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
 
 @Data
-@Entity
-@Table(name = "natural_person_fine_info")
-
+@NoArgsConstructor
+@AllArgsConstructor
 public class InfoOfFineNaturalPerson {
-    @Id
-    @org.hibernate.annotations.Type(type="org.hibernate.type.UUIDCharType")
+
+    // @org.hibernate.annotations.Type(type="org.hibernate.type.UUIDCharType")
     private UUID id;
     private BigDecimal amountOfAccrual;
     private BigDecimal amountOfPaid;
