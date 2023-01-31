@@ -6,6 +6,8 @@ import by.tsuprikova.SMVService.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 
 @Service
 @RequiredArgsConstructor
@@ -15,7 +17,7 @@ public class ResponseServiceImpl implements ResponseService {
 
 
     @Override
-    public void deleteResponseWithFine(long id) {
+    public void deleteResponseWithFine(UUID id) {
         responseRepository.deleteById(id);
     }
 

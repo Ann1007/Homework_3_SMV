@@ -7,6 +7,8 @@ import by.tsuprikova.SMVService.service.LegalPersonRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class LegalPersonRequestServiceImpl  implements LegalPersonRequestService {
@@ -15,6 +17,7 @@ public class LegalPersonRequestServiceImpl  implements LegalPersonRequestService
 
     @Override
     public LegalPersonRequest saveRequestForFine(LegalPersonRequest legalPersonRequest) {
+        legalPersonRequest.setId(UUID.randomUUID());
         return legalPersonRequestRepository.save(legalPersonRequest);
     }
 }

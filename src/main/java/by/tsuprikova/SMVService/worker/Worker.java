@@ -10,10 +10,13 @@ import by.tsuprikova.SMVService.repositories.NaturalPersonRequestRepository;
 import by.tsuprikova.SMVService.repositories.ResponseRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.type.UUIDBinaryType;
+import org.hibernate.type.UUIDCharType;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.UUID;
 
 
 @Component
@@ -34,25 +37,25 @@ public class Worker extends Thread {
 
             log.info("Worker is working....");
             while (true) {
-                Long minNaturalPersonRequestId = naturalPersonRequestRepository.findMinId();
-                Long minLegalPersonRequestId = legalPersonRequestRepository.findMinId();
+                UUID firstNaturalPersonRequestId =naturalPersonRequestRepository.findFirstId();
+                UUID firstLegalPersonRequestId = legalPersonRequestRepository.findFirstId();
 
-                while (minNaturalPersonRequestId == null && minLegalPersonRequestId == null) {
+                while (firstNaturalPersonRequestId == null && firstLegalPersonRequestId == null) {
                     try {
                         Thread.sleep(1000);
 
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    minNaturalPersonRequestId = naturalPersonRequestRepository.findMinId();
-                    minLegalPersonRequestId = legalPersonRequestRepository.findMinId();
+                    firstNaturalPersonRequestId = naturalPersonRequestRepository.findFirstId();
+                    firstLegalPersonRequestId = legalPersonRequestRepository.findFirstId();
                 }
 
-                if (minNaturalPersonRequestId != null) {
-                    workWithNaturalPersonRepository(minNaturalPersonRequestId);
+                if (firstNaturalPersonRequestId != null) {
+                    workWithNaturalPersonRepository(firstNaturalPersonRequestId);
                 }
-                if (minLegalPersonRequestId != null) {
-                    workWithLegalPersonRepository(minLegalPersonRequestId);
+                if (firstLegalPersonRequestId != null) {
+                    workWithLegalPersonRepository(firstLegalPersonRequestId);
                 }
 
             }
@@ -61,7 +64,7 @@ public class Worker extends Thread {
     }
 
 
-    private void workWithNaturalPersonRepository(long id) {
+    private void workWithNaturalPersonRepository(UUID id) {
 
         NaturalPersonRequest naturalPersonRequest = naturalPersonRequestRepository.getById(id);
         String sts = naturalPersonRequest.getSts();
@@ -73,7 +76,7 @@ public class Worker extends Thread {
             ResponseWithFine response = responseRepository.findBySts(sts);
 
             if (response == null) {
-                response = new ResponseWithFine(0, infoOfFineNaturalPerson.getAmountOfAccrual(),
+                response = new ResponseWithFine(UUID.randomUUID(), infoOfFineNaturalPerson.getAmountOfAccrual(),
                         infoOfFineNaturalPerson.getAmountOfPaid(), infoOfFineNaturalPerson.getNumberOfResolution(),
                         sts, infoOfFineNaturalPerson.getDateOfResolution(), infoOfFineNaturalPerson.getArticleOfKoap());
                 responseRepository.save(response);
@@ -85,14 +88,14 @@ public class Worker extends Thread {
     }
 
 
-    private void workWithLegalPersonRepository(long id) {
+    private void workWithLegalPersonRepository(UUID id) {
 
         LegalPersonRequest legalPersonRequest = legalPersonRequestRepository.getById(id);
         String sts = legalPersonRequest.getSts();
 
         ResponseWithFine response = responseRepository.findBySts(sts);
         if (response == null) {
-            response = new ResponseWithFine(0, new BigDecimal(44), new BigDecimal(44),
+            response = new ResponseWithFine(UUID.randomUUID(), new BigDecimal(44), new BigDecimal(44),
                     1212, legalPersonRequest.getSts(), new Date(), "32.1");
 
             responseRepository.save(response);

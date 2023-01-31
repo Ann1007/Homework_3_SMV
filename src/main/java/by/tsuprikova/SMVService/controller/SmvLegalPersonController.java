@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 
 @RestController
 @Slf4j
@@ -46,7 +48,7 @@ public class SmvLegalPersonController {
 
 
     @DeleteMapping("/response/{id}")
-    public ResponseEntity<Void> deleteResponse(@PathVariable int id) {
+    public ResponseEntity<Void> deleteResponse(@PathVariable UUID id) {
 
         responseService.deleteResponseWithFine(id);
         log.info("delete legal person response with id= {}", id);

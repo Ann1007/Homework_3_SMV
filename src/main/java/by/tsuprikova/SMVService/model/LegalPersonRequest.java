@@ -3,8 +3,10 @@ package by.tsuprikova.SMVService.model;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 
 @Data
@@ -13,8 +15,8 @@ import javax.persistence.*;
 @RequiredArgsConstructor
 public class LegalPersonRequest {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @org.hibernate.annotations.Type(type="org.hibernate.type.UUIDCharType")
+    private UUID id;
     private String sts;
     private Long INN;
 

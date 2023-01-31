@@ -5,11 +5,13 @@
                                     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
 
+    <property name="type.uuid" value="uuid()"/>
+
     <changeSet id="1-create-natural-person-fine-info-table" author="Ann">
         <createTable tableName="natural_person_fine_info"
                      remarks="Создание таблицы для информации по штрафам для физ. лиц">
 
-            <column name="id" type="long" autoIncrement="true">
+            <column name="id" type="varchar(36)" defaultValueComputed="${type.uuid}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
@@ -41,7 +43,7 @@
     </changeSet>
 
     <!--заполнение таблицы через sql файл-->
-    <changeSet id="insert-into-natural-person-fine-info" author="Ann">
+    <changeSet id="1-insert-into-natural-person-fine-info" author="Ann">
         <sqlFile dbms="h2"
                  encoding="utf8"
                  endDelimiter="\nGO"

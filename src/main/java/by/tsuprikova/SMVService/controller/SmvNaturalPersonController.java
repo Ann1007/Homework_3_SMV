@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -24,8 +26,8 @@ public class SmvNaturalPersonController {
     @PostMapping("/save_request")
     public NaturalPersonRequest saveRequest(@RequestBody NaturalPersonRequest naturalPersonRequest) {
 
-        NaturalPersonRequest savedRequest=naturalPersonRequestService.saveRequestForFine(naturalPersonRequest);
-        log.info("save natural person request with sts '{}', id={} ", savedRequest.getSts(),savedRequest.getId());
+        NaturalPersonRequest savedRequest = naturalPersonRequestService.saveRequestForFine(naturalPersonRequest);
+        log.info("save natural person request with sts '{}', id={} ", savedRequest.getSts(), savedRequest.getId());
 
         return savedRequest;
 
@@ -49,10 +51,10 @@ public class SmvNaturalPersonController {
 
 
     @DeleteMapping("/response/{id}")
-    public ResponseEntity<Void> deleteResponse(@PathVariable int id) {
+    public ResponseEntity<Void> deleteResponse(@PathVariable UUID id) {
 
         responseService.deleteResponseWithFine(id);
-        log.info("delete natural person response with id= {}",id);
+        log.info("delete natural person response with id= {}", id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -4,10 +4,12 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                                     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
+    <property name="type.uuid" value="uuid()"/>
 
     <changeSet id="1-create-natural-person-request-table" author="Ann">
         <createTable tableName="natural_person_request" remarks="Создание таблицы для физ. лиц запросов">
-            <column name="id" type="long" autoIncrement="true">
+
+            <column name="id" type="varchar(36)" defaultValueComputed="${type.uuid}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="sts" type="varchar(15)">
@@ -16,7 +18,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="insert-into-natural_person_request-sts" author="Ann">
+    <changeSet id="1-insert-into-natural_person_request-sts" author="Ann">
         <insert tableName="natural_person_request">
             <column name="sts" value="78 ут 243401"/>
         </insert>

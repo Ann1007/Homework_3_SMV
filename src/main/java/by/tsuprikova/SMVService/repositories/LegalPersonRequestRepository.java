@@ -5,9 +5,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface LegalPersonRequestRepository extends JpaRepository<LegalPersonRequest, Long> {
+import java.util.UUID;
 
-    @Query(value = "SELECT min(id) FROM legal_person_request", nativeQuery = true)
-    Long findMinId();
+@Repository
+public interface LegalPersonRequestRepository extends JpaRepository<LegalPersonRequest, UUID> {
+
+    @Query(value = "SELECT id FROM legal_person_request limit 1", nativeQuery = true)
+    UUID findFirstId();
+
+
+
 }

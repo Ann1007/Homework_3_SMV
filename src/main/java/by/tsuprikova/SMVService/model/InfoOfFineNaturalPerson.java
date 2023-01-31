@@ -2,10 +2,12 @@ package by.tsuprikova.SMVService.model;
 
 
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -13,8 +15,8 @@ import java.util.Date;
 
 public class InfoOfFineNaturalPerson {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @org.hibernate.annotations.Type(type="org.hibernate.type.UUIDCharType")
+    private UUID id;
     private BigDecimal amountOfAccrual;
     private BigDecimal amountOfPaid;
     private int numberOfResolution;

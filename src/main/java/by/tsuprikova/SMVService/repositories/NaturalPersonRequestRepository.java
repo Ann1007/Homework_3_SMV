@@ -1,15 +1,18 @@
 package by.tsuprikova.SMVService.repositories;
 
+import by.tsuprikova.SMVService.model.LegalPersonRequest;
 import by.tsuprikova.SMVService.model.NaturalPersonRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface NaturalPersonRequestRepository extends JpaRepository<NaturalPersonRequest,Long> {
+import java.util.UUID;
 
-    @Query(value = "SELECT MIN(id) FROM natural_person_request", nativeQuery = true)
-    Long findMinId();
+@Repository
+public interface NaturalPersonRequestRepository extends JpaRepository<NaturalPersonRequest, UUID> {
+
+    @Query(value = "SELECT id FROM natural_person_request limit 1", nativeQuery = true)
+    UUID findFirstId();
 
 
 }

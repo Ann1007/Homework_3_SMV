@@ -7,6 +7,8 @@ import by.tsuprikova.SMVService.service.NaturalPersonRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class NaturalPersonRequestServiceImpl implements NaturalPersonRequestService {
@@ -16,6 +18,7 @@ public class NaturalPersonRequestServiceImpl implements NaturalPersonRequestServ
 
     @Override
     public NaturalPersonRequest saveRequestForFine(NaturalPersonRequest naturalPersonRequest) {
+        naturalPersonRequest.setId(UUID.randomUUID());
         return naturalPersonRequestRepository.save(naturalPersonRequest);
     }
 }
