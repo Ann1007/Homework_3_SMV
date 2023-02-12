@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.UUID;
 
 
@@ -24,7 +25,7 @@ public class SmvLegalPersonController {
 
 
     @PostMapping("/save_request")
-    public LegalPersonRequest saveRequest(@RequestBody LegalPersonRequest legalPersonRequest) {
+    public LegalPersonRequest saveRequest(@Valid @RequestBody LegalPersonRequest legalPersonRequest) {
 
         LegalPersonRequest savedRequest = legalPersonRequestService.saveRequestForFine(legalPersonRequest);
         log.info("the legal person request was successfully saved with sts '{}', id={} ", savedRequest.getSts(), savedRequest.getId());
@@ -34,7 +35,7 @@ public class SmvLegalPersonController {
 
 
     @PostMapping("/get_response")
-    public ResponseEntity<ResponseWithFine> getResponse(@RequestBody LegalPersonRequest legalPersonRequest) {
+    public ResponseEntity<ResponseWithFine> getResponse(@Valid @RequestBody LegalPersonRequest legalPersonRequest) {
 
         ResponseWithFine responseWithFine = responseService.getResponseForFine(legalPersonRequest.getSts());
         if (responseWithFine == null) {

@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.UUID;
 
 
@@ -24,7 +25,7 @@ public class SmvNaturalPersonController {
 
 
     @PostMapping("/save_request")
-    public NaturalPersonRequest saveRequest(@RequestBody NaturalPersonRequest naturalPersonRequest) {
+    public NaturalPersonRequest saveRequest(@Valid @RequestBody NaturalPersonRequest naturalPersonRequest) {
 
         NaturalPersonRequest savedRequest = naturalPersonRequestService.saveRequestForFine(naturalPersonRequest);
         log.info("save natural person request was successfully saved with sts '{}', id={}", savedRequest.getSts(), savedRequest.getId());
@@ -35,7 +36,7 @@ public class SmvNaturalPersonController {
 
 
     @PostMapping("/get_response")
-    public ResponseEntity<ResponseWithFine> getResponse(@RequestBody NaturalPersonRequest naturalPersonRequest) {
+    public ResponseEntity<ResponseWithFine> getResponse(@Valid @RequestBody NaturalPersonRequest naturalPersonRequest) {
 
         ResponseWithFine responseWithFine = responseService.getResponseForFine(naturalPersonRequest.getSts());
         if (responseWithFine == null) {
