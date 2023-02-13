@@ -25,12 +25,12 @@ public class SmvNaturalPersonController {
 
 
     @PostMapping("/save_request")
-    public NaturalPersonRequest saveRequest(@Valid @RequestBody NaturalPersonRequest naturalPersonRequest) {
+    public ResponseEntity<NaturalPersonRequest> saveRequest(@Valid @RequestBody NaturalPersonRequest naturalPersonRequest) {
 
         NaturalPersonRequest savedRequest = naturalPersonRequestService.saveRequestForFine(naturalPersonRequest);
-        log.info("save natural person request was successfully saved with sts '{}', id={}", savedRequest.getSts(), savedRequest.getId());
+        log.info("natural person request was successfully saved with sts '{}', id={}", savedRequest.getSts(), savedRequest.getId());
 
-        return savedRequest;
+        return new ResponseEntity<>(savedRequest,HttpStatus.ACCEPTED);
 
     }
 
@@ -41,7 +41,7 @@ public class SmvNaturalPersonController {
         ResponseWithFine responseWithFine = responseService.getResponseForFine(naturalPersonRequest.getSts());
         if (responseWithFine == null) {
             log.info("natural person response is null for sts '{}'", naturalPersonRequest.getSts());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 
         }
 

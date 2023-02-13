@@ -40,7 +40,7 @@ public class SmvLegalPersonController {
         ResponseWithFine responseWithFine = responseService.getResponseForFine(legalPersonRequest.getSts());
         if (responseWithFine == null) {
             log.info("legal person response is null for sts '{}'", legalPersonRequest.getSts());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
         return new ResponseEntity<>(responseWithFine, HttpStatus.OK);
