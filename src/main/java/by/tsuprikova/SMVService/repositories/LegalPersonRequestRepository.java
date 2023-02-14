@@ -1,18 +1,19 @@
 package by.tsuprikova.SMVService.repositories;
 
+import by.tsuprikova.SMVService.exceptions.SmvServerException;
 import by.tsuprikova.SMVService.model.LegalPersonRequest;
 
 import java.util.UUID;
 
 public interface LegalPersonRequestRepository {
 
-    UUID findFirstId();
+    UUID findFirstId() throws SmvServerException;
 
-    LegalPersonRequest save(LegalPersonRequest legalPersonRequest);
+    LegalPersonRequest save(LegalPersonRequest legalPersonRequest) throws SmvServerException;
 
-    LegalPersonRequest getById(UUID id);
+    LegalPersonRequest getById(UUID id) throws SmvServerException;
 
-    void delete(UUID id);
+    void delete(UUID id) throws SmvServerException;
 
 
 }

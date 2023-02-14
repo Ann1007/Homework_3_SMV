@@ -1,5 +1,6 @@
 package by.tsuprikova.SMVService.repositories.impl;
 
+import by.tsuprikova.SMVService.exceptions.SmvServerException;
 import by.tsuprikova.SMVService.model.ResponseWithFine;
 import by.tsuprikova.SMVService.repositories.ResponseRepository;
 
@@ -27,8 +28,7 @@ public class ResponseRepositoryImpl implements ResponseRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public ResponseWithFine findBySts(String sts) {
-
+    public ResponseWithFine findBySts(String sts) throws SmvServerException {
 
         ResponseWithFine response = null;
         try {
@@ -46,23 +46,31 @@ public class ResponseRepositoryImpl implements ResponseRepository {
             );
         } catch (EmptyResultDataAccessException e) {
             return null;
+        } catch (DataAccessException e) {
+            throw new SmvServerException(e.getMessage());
         }
-
         return response;
     }
 
     @Override
-    public void save(ResponseWithFine response) {
-        response.setId(UUID.randomUUID());
-        jdbcTemplate.update(INSERT_RESPONSE, response.getId(), response.getAmountOfAccrual(), response.getAmountOfPaid(),
-                response.getArticleOfKoap(), response.getDateOfResolution(), response.getNumberOfResolution(), response.getSts());
+    public void save(ResponseWithFine response) throws SmvServerException {
+        try {
+            response.setId(UUID.randomUUID());
+            jdbcTemplate.update(INSERT_RESPONSE, response.getId(), response.getAmountOfAccrual(), response.getAmountOfPaid(),
+                    response.getArticleOfKoap(), response.getDateOfResolution(), response.getNumberOfResolution(), response.getSts());
 
+        } catch (DataAccessException e) {
+            throw new SmvServerException(e.getMessage());
+        }
     }
 
     @Override
-    public void deleteById(UUID id) {
-        jdbcTemplate.update(DELETE_RESPONSE_BY_ID, id);
-
+    public void deleteById(UUID id) throws SmvServerException {
+        try {
+            jdbcTemplate.update(DELETE_RESPONSE_BY_ID, id);
+        } catch (DataAccessException e) {
+            throw new SmvServerException(e.getMessage());
+        }
     }
 
 

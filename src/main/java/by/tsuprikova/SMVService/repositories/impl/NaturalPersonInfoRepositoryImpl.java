@@ -1,7 +1,7 @@
 package by.tsuprikova.SMVService.repositories.impl;
 
+import by.tsuprikova.SMVService.exceptions.SmvServerException;
 import by.tsuprikova.SMVService.model.InfoOfFineNaturalPerson;
-import by.tsuprikova.SMVService.model.ResponseWithFine;
 import by.tsuprikova.SMVService.repositories.NaturalPersonInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -14,13 +14,14 @@ import org.springframework.stereotype.Repository;
 public class NaturalPersonInfoRepositoryImpl implements NaturalPersonInfoRepository {
 
     private final String SELECT_INFO_OF_FINE_BY_STS =
-            "SELECT id, amount_of_accrual, amount_of_paid, number_of_resolution, sts, date_of_resolution, article_of_koap FROM natural_person_fine_info WHERE sts=?";
+            "SELECT id, amount_of_accrual, amount_of_paid, number_of_resolution, sts, date_of_resolution, article_of_koap " +
+                    "FROM natural_person_fine_info WHERE sts=?";
 
     private final JdbcTemplate jdbcTemplate;
 
 
     @Override
-    public InfoOfFineNaturalPerson findBySts(String sts) {
+    public InfoOfFineNaturalPerson findBySts(String sts) throws SmvServerException {
         InfoOfFineNaturalPerson info = null;
         try {
 
@@ -39,6 +40,8 @@ public class NaturalPersonInfoRepositoryImpl implements NaturalPersonInfoReposit
         } catch (EmptyResultDataAccessException e) {
             return null;
 
+        } catch (DataAccessException e) {
+            throw new SmvServerException(e.getMessage());
         }
         return info;
     }
