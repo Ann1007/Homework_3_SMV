@@ -1,6 +1,7 @@
 package by.tsuprikova.SMVService.controller;
 
 import by.tsuprikova.SMVService.model.LegalPersonRequest;
+import by.tsuprikova.SMVService.model.NaturalPersonRequest;
 import by.tsuprikova.SMVService.model.ResponseWithFine;
 import by.tsuprikova.SMVService.service.LegalPersonRequestService;
 import by.tsuprikova.SMVService.service.ResponseService;
@@ -25,11 +26,9 @@ public class SmvLegalPersonController {
 
 
     @PostMapping("/save_request")
-    public LegalPersonRequest saveRequest(@Valid @RequestBody LegalPersonRequest legalPersonRequest) {
+    public ResponseEntity<LegalPersonRequest> saveRequest(@Valid @RequestBody LegalPersonRequest legalPersonRequest) {
 
-        LegalPersonRequest savedRequest = legalPersonRequestService.saveRequestForFine(legalPersonRequest);
-        log.info("the legal person request was successfully saved with sts '{}', id={} ", savedRequest.getSts(), savedRequest.getId());
-        return savedRequest;
+        return legalPersonRequestService.saveRequestForFine(legalPersonRequest);
 
     }
 
@@ -37,13 +36,7 @@ public class SmvLegalPersonController {
     @PostMapping("/get_response")
     public ResponseEntity<ResponseWithFine> getResponse(@Valid @RequestBody LegalPersonRequest legalPersonRequest) {
 
-        ResponseWithFine responseWithFine = responseService.getResponseForFine(legalPersonRequest.getSts());
-        if (responseWithFine == null) {
-            log.info("legal person response is null for sts '{}'", legalPersonRequest.getSts());
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<>(responseWithFine, HttpStatus.OK);
+        return responseService.getResponseForFine(legalPersonRequest.getSts());
 
     }
 
@@ -51,9 +44,7 @@ public class SmvLegalPersonController {
     @DeleteMapping("/response/{id}")
     public ResponseEntity<Void> deleteResponse(@PathVariable UUID id) {
 
-        responseService.deleteResponseWithFine(id);
-        log.info("legal person response was successfully deleted with id={}", id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return responseService.deleteResponseWithFine(id);
     }
 
 }

@@ -27,10 +27,7 @@ public class SmvNaturalPersonController {
     @PostMapping("/save_request")
     public ResponseEntity<NaturalPersonRequest> saveRequest(@Valid @RequestBody NaturalPersonRequest naturalPersonRequest) {
 
-        NaturalPersonRequest savedRequest = naturalPersonRequestService.saveRequestForFine(naturalPersonRequest);
-        log.info("natural person request was successfully saved with sts '{}', id={}", savedRequest.getSts(), savedRequest.getId());
-
-        return new ResponseEntity<>(savedRequest,HttpStatus.ACCEPTED);
+        return naturalPersonRequestService.saveRequestForFine(naturalPersonRequest);
 
     }
 
@@ -38,14 +35,7 @@ public class SmvNaturalPersonController {
     @PostMapping("/get_response")
     public ResponseEntity<ResponseWithFine> getResponse(@Valid @RequestBody NaturalPersonRequest naturalPersonRequest) {
 
-        ResponseWithFine responseWithFine = responseService.getResponseForFine(naturalPersonRequest.getSts());
-        if (responseWithFine == null) {
-            log.info("natural person response is null for sts '{}'", naturalPersonRequest.getSts());
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-
-        }
-
-        return new ResponseEntity<>(responseWithFine, HttpStatus.OK);
+        return responseService.getResponseForFine(naturalPersonRequest.getSts());
 
 
     }
@@ -54,9 +44,7 @@ public class SmvNaturalPersonController {
     @DeleteMapping("/response/{id}")
     public ResponseEntity<Void> deleteResponse(@PathVariable UUID id) {
 
-        responseService.deleteResponseWithFine(id);
-        log.info("natural person response was successfully deleted with id={}", id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return responseService.deleteResponseWithFine(id);
     }
 
 
