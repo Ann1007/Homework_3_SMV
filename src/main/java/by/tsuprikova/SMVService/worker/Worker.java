@@ -81,9 +81,15 @@ public class Worker extends Thread {
                 ResponseWithFine response = responseRepository.findBySts(sts);
 
                 if (response == null) {
-                    response = new ResponseWithFine(infoOfFineNaturalPerson.getAmountOfAccrual(),
-                            infoOfFineNaturalPerson.getAmountOfPaid(), infoOfFineNaturalPerson.getNumberOfResolution(),
-                            sts, infoOfFineNaturalPerson.getDateOfResolution(), infoOfFineNaturalPerson.getArticleOfKoap());
+                    response = ResponseWithFine.builder().
+                            amountOfAccrual(infoOfFineNaturalPerson.getAmountOfAccrual()).
+                            amountOfPaid(infoOfFineNaturalPerson.getAmountOfPaid()).
+                            numberOfResolution(infoOfFineNaturalPerson.getNumberOfResolution()).
+                            sts(sts).
+                            dateOfResolution(infoOfFineNaturalPerson.getDateOfResolution()).
+                            articleOfKoap(infoOfFineNaturalPerson.getArticleOfKoap()).
+                            build();
+
                     responseRepository.save(response);
                 }
             }
@@ -103,8 +109,15 @@ public class Worker extends Thread {
 
             ResponseWithFine response = responseRepository.findBySts(sts);
             if (response == null) {
-                response = new ResponseWithFine(new BigDecimal(44), new BigDecimal(44),
-                        1212, legalPersonRequest.getSts(), new Date(), "32.1");
+
+                response = response = ResponseWithFine.builder().
+                        amountOfAccrual(new BigDecimal(44)).
+                        amountOfPaid(new BigDecimal(44)).
+                        numberOfResolution(123).
+                        sts(sts).
+                        dateOfResolution(new Date()).
+                        articleOfKoap("21.1").
+                        build();
 
                 responseRepository.save(response);
             }

@@ -1,6 +1,7 @@
 package by.tsuprikova.SMVService.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ResponseWithFine {
 
     private UUID id;
@@ -21,12 +23,5 @@ public class ResponseWithFine {
     private Date dateOfResolution;
     private String articleOfKoap;
 
-    public ResponseWithFine(BigDecimal amountOfAccrual, BigDecimal amountOfPaid, int numberOfResolution, String sts, Date dateOfResolution, String articleOfKoap) {
-        this.amountOfAccrual = amountOfAccrual;
-        this.amountOfPaid = amountOfPaid;
-        this.numberOfResolution = numberOfResolution;
-        this.sts = sts;
-        this.dateOfResolution = dateOfResolution;
-        this.articleOfKoap = articleOfKoap;
-    }
+
 }
