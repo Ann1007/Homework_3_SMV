@@ -13,7 +13,7 @@ public interface LegalPersonRequestRepository {
 
     LegalPersonRequest getById(UUID id) throws SmvServerException;
 
-    void delete(UUID id) throws SmvServerException;
+    int delete(UUID id) throws SmvServerException;
 
 
 }

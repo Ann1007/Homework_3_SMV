@@ -2,7 +2,6 @@ package by.tsuprikova.SMVService.repositories.impl;
 
 import by.tsuprikova.SMVService.exceptions.SmvServerException;
 import by.tsuprikova.SMVService.model.LegalPersonRequest;
-import by.tsuprikova.SMVService.model.NaturalPersonRequest;
 import by.tsuprikova.SMVService.repositories.LegalPersonRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -38,13 +37,14 @@ public class LegalPersonRequestRepositoryImpl implements LegalPersonRequestRepos
     }
 
 
+
     @Override
     public LegalPersonRequest save(LegalPersonRequest request) throws SmvServerException {
         LegalPersonRequest insertRequest;
         try {
             UUID id = UUID.randomUUID();
             request.setId(id);
-            jdbcTemplate.update(INSERT_REQUEST, request.getId(), request.getSts(), request.getINN());
+            jdbcTemplate.update(INSERT_REQUEST, request.getId(), request.getSts(), request.getInn());
             insertRequest = getById(id);
 
         } catch (DataAccessException e) {
@@ -75,12 +75,14 @@ public class LegalPersonRequestRepositoryImpl implements LegalPersonRequestRepos
 
 
     @Override
-    public void delete(UUID id) throws SmvServerException {
+    public int delete(UUID id) throws SmvServerException {
+        int kol = 0;
         try {
-            jdbcTemplate.update(DELETE_REQUEST_BY_ID, id);
+            kol = jdbcTemplate.update(DELETE_REQUEST_BY_ID, id);
         } catch (DataAccessException e) {
             throw new SmvServerException(e.getMessage());
         }
+        return kol;
 
     }
 }
