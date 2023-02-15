@@ -13,7 +13,7 @@ public interface ResponseRepository {
 
     void save(ResponseWithFine response) throws SmvServerException;
 
-    void deleteById(UUID id) throws SmvServerException;
+    int deleteById(UUID id) throws SmvServerException;
 
 
 }

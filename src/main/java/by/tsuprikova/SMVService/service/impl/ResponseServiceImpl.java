@@ -25,7 +25,11 @@ public class ResponseServiceImpl implements ResponseService {
     public ResponseEntity<Void> deleteResponseWithFine(UUID id) {
         ResponseEntity<Void> responseEntity;
         try {
-            responseRepository.deleteById(id);
+            int kol = responseRepository.deleteById(id);
+            if (kol == 0) {
+                return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+            }
+
             responseEntity = new ResponseEntity<>(HttpStatus.OK);
             log.info("response was successfully deleted with id={}", id);
         } catch (SmvServerException e) {

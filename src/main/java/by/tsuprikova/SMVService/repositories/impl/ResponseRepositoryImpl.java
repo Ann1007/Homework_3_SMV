@@ -65,12 +65,15 @@ public class ResponseRepositoryImpl implements ResponseRepository {
     }
 
     @Override
-    public void deleteById(UUID id) throws SmvServerException {
+    public int deleteById(UUID id) throws SmvServerException {
+
+        int kol = 0;
         try {
-            jdbcTemplate.update(DELETE_RESPONSE_BY_ID, id);
+            kol = jdbcTemplate.update(DELETE_RESPONSE_BY_ID, id);
         } catch (DataAccessException e) {
             throw new SmvServerException(e.getMessage());
         }
+        return kol;
     }
 
 
