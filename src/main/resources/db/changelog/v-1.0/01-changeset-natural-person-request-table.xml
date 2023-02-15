@@ -22,24 +22,8 @@
         <insert tableName="natural_person_request">
             <column name="sts" value="78 ут 243401"/>
         </insert>
-        <insert tableName="natural_person_request">
-            <column name="sts" value="74 ут 243333"/>
-        </insert>
-        <insert tableName="natural_person_request">
-            <column name="sts" value="76 ув 435654"/>
-        </insert>
-        <insert tableName="natural_person_request">
-            <column name="sts" value="56 ут 123456"/>
-        </insert>
-        <insert tableName="natural_person_request">
-            <column name="sts" value="43 ут 456323"/>
-        </insert>
-        <insert tableName="natural_person_request">
-            <column name="sts" value="89 ув 123456"/>
-        </insert>
-        <insert tableName="natural_person_request">
-            <column name="sts" value="90 ув 567890"/>
-        </insert>
+
+
 
     </changeSet>
 

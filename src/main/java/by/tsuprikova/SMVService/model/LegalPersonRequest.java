@@ -20,6 +20,6 @@ public class LegalPersonRequest {
     @NotBlank(message = "поле стс не может быть пустое")
     private String sts;
     @Min(value = 1_000_000_000L, message = "поле ИНН должно состоять минимум из 10 цифр")
-    private Long INN;
+    private Long inn;
 
 }

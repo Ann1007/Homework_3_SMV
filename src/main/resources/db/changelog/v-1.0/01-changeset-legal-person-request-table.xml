@@ -29,15 +29,6 @@
             <column name="inn" value="2345676543"/>
         </insert>
 
-        <insert tableName="legal_person_request">
-            <column name="sts" value="13 са 111118"/>
-            <column name="inn" value="2345676543"/>
-        </insert>
-
-        <insert tableName="legal_person_request">
-            <column name="sts" value="93 са 888678"/>
-            <column name="inn" value="2345676543"/>
-        </insert>
 
     </changeSet>
 

@@ -42,7 +42,7 @@ public class Worker extends Thread {
 
                     while (firstNaturalPersonRequestId == null && firstLegalPersonRequestId == null) {
                         try {
-                            Thread.sleep(500);
+                            Thread.sleep(300);
 
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -110,7 +110,7 @@ public class Worker extends Thread {
             ResponseWithFine response = responseRepository.findBySts(sts);
             if (response == null) {
 
-                response = response = ResponseWithFine.builder().
+                 response = ResponseWithFine.builder().
                         amountOfAccrual(new BigDecimal(44)).
                         amountOfPaid(new BigDecimal(44)).
                         numberOfResolution(123).

@@ -29,7 +29,6 @@ public class NaturalPersonRequestRepositoryImpl implements NaturalPersonRequestR
         try {
             id = jdbcTemplate.queryForObject(SELECT_FIRST_ID, UUID.class);
         } catch (EmptyResultDataAccessException e) {
-
             return null;
         } catch (DataAccessException e) {
             throw new SmvServerException(e.getMessage());
@@ -72,6 +71,7 @@ public class NaturalPersonRequestRepositoryImpl implements NaturalPersonRequestR
         }
         return request;
     }
+
 
     @Override
     public void delete(UUID id) throws SmvServerException {
