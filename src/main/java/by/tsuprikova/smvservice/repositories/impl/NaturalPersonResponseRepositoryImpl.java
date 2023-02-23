@@ -1,8 +1,8 @@
 package by.tsuprikova.smvservice.repositories.impl;
 
 import by.tsuprikova.smvservice.exceptions.SmvServerException;
-import by.tsuprikova.smvservice.model.ResponseWithFine;
-import by.tsuprikova.smvservice.repositories.ResponseRepository;
+import by.tsuprikova.smvservice.model.NaturalPersonResponse;
+import by.tsuprikova.smvservice.repositories.NaturalPersonResponseRepository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -14,27 +14,27 @@ import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
-public class ResponseRepositoryImpl implements ResponseRepository {
+public class NaturalPersonResponseRepositoryImpl implements NaturalPersonResponseRepository {
 
     private final String SELECT_RESPONSE_BY_STS =
-            "SELECT id, amount_of_accrual, amount_of_paid, number_of_resolution, sts, date_of_resolution, article_of_koap FROM response_with_fine WHERE sts=?";
+            "SELECT id, amount_of_accrual, amount_of_paid, number_of_resolution, sts, date_of_resolution, article_of_koap FROM natural_person_response WHERE sts=?";
 
-    private final String INSERT_RESPONSE = "INSERT INTO response_with_fine " +
+    private final String INSERT_RESPONSE = "INSERT INTO natural_person_response " +
             "(id,amount_of_accrual, amount_of_paid, article_of_koap, date_of_resolution, number_of_resolution, sts) VALUES (?,?,?,?,?,?,?)";
 
-    private final String DELETE_RESPONSE_BY_ID = "DELETE FROM response_with_fine WHERE id=?";
+    private final String DELETE_RESPONSE_BY_ID = "DELETE FROM natural_person_response WHERE id=?";
 
 
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public ResponseWithFine findBySts(String sts) throws SmvServerException {
+    public NaturalPersonResponse findBySts(String sts) throws SmvServerException {
 
-        ResponseWithFine response = null;
+        NaturalPersonResponse response = null;
         try {
             response = jdbcTemplate.queryForObject(SELECT_RESPONSE_BY_STS, new Object[]{sts},
                     (rs, numRow) ->
-                            new ResponseWithFine(
+                            new NaturalPersonResponse(
                                     rs.getObject("id", java.util.UUID.class),
                                     rs.getBigDecimal("amount_of_accrual"),
                                     rs.getBigDecimal("amount_of_paid"),
@@ -53,7 +53,7 @@ public class ResponseRepositoryImpl implements ResponseRepository {
     }
 
     @Override
-    public void save(ResponseWithFine response) throws SmvServerException {
+    public void save(NaturalPersonResponse response) throws SmvServerException {
         try {
             response.setId(UUID.randomUUID());
             jdbcTemplate.update(INSERT_RESPONSE, response.getId(), response.getAmountOfAccrual(), response.getAmountOfPaid(),

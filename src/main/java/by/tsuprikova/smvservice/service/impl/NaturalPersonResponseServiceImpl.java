@@ -1,9 +1,10 @@
 package by.tsuprikova.smvservice.service.impl;
 
 import by.tsuprikova.smvservice.exceptions.SmvServerException;
+import by.tsuprikova.smvservice.model.NaturalPersonResponse;
 import by.tsuprikova.smvservice.model.ResponseWithFine;
-import by.tsuprikova.smvservice.repositories.ResponseRepository;
-import by.tsuprikova.smvservice.service.ResponseService;
+import by.tsuprikova.smvservice.repositories.NaturalPersonResponseRepository;
+import by.tsuprikova.smvservice.service.NaturalPersonResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,9 +17,9 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ResponseServiceImpl implements ResponseService {
+public class NaturalPersonResponseServiceImpl implements NaturalPersonResponseService {
 
-    private final ResponseRepository responseRepository;
+    private final NaturalPersonResponseRepository responseRepository;
 
 
     @Override
@@ -27,11 +28,12 @@ public class ResponseServiceImpl implements ResponseService {
         try {
             int kol = responseRepository.deleteById(id);
             if (kol == 0) {
+                log.info("natural person response can't be deleted with id={}", id);
                 return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
             }
 
             responseEntity = new ResponseEntity<>(HttpStatus.OK);
-            log.info("response was successfully deleted with id={}", id);
+            log.info("natural person response was successfully deleted with id={}", id);
         } catch (SmvServerException e) {
             log.error(e.getMessage());
             responseEntity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -42,14 +44,14 @@ public class ResponseServiceImpl implements ResponseService {
 
 
     @Override
-    public ResponseEntity<ResponseWithFine> getResponseForFine(String sts) {
+    public ResponseEntity<NaturalPersonResponse> getResponseForFine(String sts) {
 
-        ResponseEntity<ResponseWithFine> response;
+        ResponseEntity<NaturalPersonResponse> response;
         try {
-            ResponseWithFine responseWithFine = responseRepository.findBySts(sts);
+            NaturalPersonResponse responseWithFine = responseRepository.findBySts(sts);
 
             if (responseWithFine == null) {
-                log.info("response is null for sts '{}'", sts);
+                log.info("natural person response is null for sts '{}'", sts);
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
             response = new ResponseEntity<>(responseWithFine, HttpStatus.OK);

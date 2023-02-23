@@ -1,11 +1,10 @@
 package by.tsuprikova.smvservice.controller;
 
 import by.tsuprikova.smvservice.model.NaturalPersonRequest;
-import by.tsuprikova.smvservice.model.ResponseWithFine;
+import by.tsuprikova.smvservice.model.NaturalPersonResponse;
 import by.tsuprikova.smvservice.service.NaturalPersonRequestService;
-import by.tsuprikova.smvservice.service.ResponseService;
+import by.tsuprikova.smvservice.service.NaturalPersonResponseService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +14,10 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 @RequestMapping("/smv/natural_person")
 public class SmvNaturalPersonController {
 
-    private final ResponseService responseService;
+    private final NaturalPersonResponseService naturalPersonResponseService;
     private final NaturalPersonRequestService naturalPersonRequestService;
 
 
@@ -32,9 +30,9 @@ public class SmvNaturalPersonController {
 
 
     @PostMapping("/get_response")
-    public ResponseEntity<ResponseWithFine> getResponse(@Valid @RequestBody NaturalPersonRequest naturalPersonRequest) {
+    public ResponseEntity<NaturalPersonResponse> getResponse(@Valid @RequestBody NaturalPersonRequest naturalPersonRequest) {
 
-        return responseService.getResponseForFine(naturalPersonRequest.getSts());
+        return naturalPersonResponseService.getResponseForFine(naturalPersonRequest.getSts());
 
 
     }
@@ -43,7 +41,7 @@ public class SmvNaturalPersonController {
     @DeleteMapping("/response/{id}")
     public ResponseEntity<Void> deleteResponse(@PathVariable UUID id) {
 
-        return responseService.deleteResponseWithFine(id);
+        return naturalPersonResponseService.deleteResponseWithFine(id);
     }
 
 

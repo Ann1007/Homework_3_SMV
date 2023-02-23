@@ -19,7 +19,6 @@ public class ResponseWithFine {
     private BigDecimal amountOfAccrual;
     private BigDecimal amountOfPaid;
     private int numberOfResolution;
-    private String sts;
     private Date dateOfResolution;
     private String articleOfKoap;
 

@@ -6,9 +6,9 @@
 
     <property name="type.uuid" value="uuid()"/>
 
-    <changeSet id="1-create-response-with-fine-table" author="Ann">
-        <createTable tableName="response_with_fine"
-                     remarks="Создание таблицы для ответов для физ. и юр. лиц">
+    <changeSet id="1-create-natural-person-response" author="Ann">
+        <createTable tableName="natural_person_response"
+                     remarks="Создание таблицы для ответов для физ. лиц">
 
             <column name="id"  type="varchar(36)" defaultValueComputed="${type.uuid}">
                 <constraints primaryKey="true" nullable="false"/>

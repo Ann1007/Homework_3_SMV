@@ -7,14 +7,11 @@
 
     <property name="type.uuid" value="uuid()"/>
 
-    <changeSet id="1-create-natural-person-request-table" author="Ann">
-        <createTable tableName="legal_person_request" remarks="Создание таблицы для юр. лиц запросов">
+    <changeSet id="1-create-legal-person-request-table" author="Ann">
+        <createTable tableName="legal_person_request" remarks="Создание таблицы для запросов юр. лиц">
 
             <column name="id" type="varchar(36)" defaultValueComputed="${type.uuid}" >
                 <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="sts" type="varchar(15)">
-                <constraints nullable="false"/>
             </column>
             <column name="inn" type="long">
                 <constraints nullable="false"/>
@@ -25,7 +22,6 @@
     <changeSet id="1-insert-into-legal_person_request" author="Ann">
 
         <insert tableName="legal_person_request">
-            <column name="sts" value="73 са 235678"/>
             <column name="inn" value="2345676543"/>
         </insert>
 

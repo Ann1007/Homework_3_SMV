@@ -1,0 +1,45 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="type.uuid" value="uuid()"/>
+
+    <changeSet id="1-create-legal-person-response" author="Ann">
+        <createTable tableName="legal_person_response"
+                     remarks="Создание таблицы для ответов для юр. лиц">
+
+            <column name="id"  type="varchar(36)" defaultValueComputed="${type.uuid}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="amount_of_accrual" type="decimal">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="amount_of_paid" type="decimal">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="number_of_resolution" type="int">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="inn" type="long">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="date_of_resolution" type="date">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="article_of_koap" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+    </changeSet>
+
+
+</databaseChangeLog>

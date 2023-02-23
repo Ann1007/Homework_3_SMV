@@ -1,14 +1,8 @@
 package by.tsuprikova.smvservice.worker;
 
 import by.tsuprikova.smvservice.exceptions.SmvServerException;
-import by.tsuprikova.smvservice.model.LegalPersonRequest;
-import by.tsuprikova.smvservice.model.NaturalPersonRequest;
-import by.tsuprikova.smvservice.model.ResponseWithFine;
-import by.tsuprikova.smvservice.model.InfoOfFineNaturalPerson;
-import by.tsuprikova.smvservice.repositories.LegalPersonRequestRepository;
-import by.tsuprikova.smvservice.repositories.NaturalPersonInfoRepository;
-import by.tsuprikova.smvservice.repositories.NaturalPersonRequestRepository;
-import by.tsuprikova.smvservice.repositories.ResponseRepository;
+import by.tsuprikova.smvservice.model.*;
+import by.tsuprikova.smvservice.repositories.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -25,8 +19,9 @@ public class Worker extends Thread {
 
     private NaturalPersonRequestRepository naturalPersonRequestRepository;
     private NaturalPersonInfoRepository infoRepository;
-    private ResponseRepository responseRepository;
+    private NaturalPersonResponseRepository naturalPersonResponseRepository;
     private LegalPersonRequestRepository legalPersonRequestRepository;
+    private LegalPersonResponseRepository legalPersonResponseRepository;
 
 
     @Override
@@ -52,10 +47,10 @@ public class Worker extends Thread {
                     }
 
                     if (firstNaturalPersonRequestId != null) {
-                        workWithNaturalPersonRepository(firstNaturalPersonRequestId);
+                        workWithNaturalPersonRepositories(firstNaturalPersonRequestId);
                     }
                     if (firstLegalPersonRequestId != null) {
-                        workWithLegalPersonRepository(firstLegalPersonRequestId);
+                        workWithLegalPersonRepositories(firstLegalPersonRequestId);
                     }
 
                 } catch (SmvServerException e) {
@@ -69,7 +64,7 @@ public class Worker extends Thread {
     }
 
 
-    private void workWithNaturalPersonRepository(UUID id) {
+    private void workWithNaturalPersonRepositories(UUID id) {
         try {
             NaturalPersonRequest naturalPersonRequest = naturalPersonRequestRepository.getById(id);
             String sts = naturalPersonRequest.getSts();
@@ -78,10 +73,10 @@ public class Worker extends Thread {
 
             if (infoOfFineNaturalPerson != null) {
 
-                ResponseWithFine response = responseRepository.findBySts(sts);
+                NaturalPersonResponse response = naturalPersonResponseRepository.findBySts(sts);
 
                 if (response == null) {
-                    response = ResponseWithFine.builder().
+                    response = NaturalPersonResponse.responseBuilder().
                             amountOfAccrual(infoOfFineNaturalPerson.getAmountOfAccrual()).
                             amountOfPaid(infoOfFineNaturalPerson.getAmountOfPaid()).
                             numberOfResolution(infoOfFineNaturalPerson.getNumberOfResolution()).
@@ -90,7 +85,7 @@ public class Worker extends Thread {
                             articleOfKoap(infoOfFineNaturalPerson.getArticleOfKoap()).
                             build();
 
-                    responseRepository.save(response);
+                    naturalPersonResponseRepository.save(response);
                 }
             }
             naturalPersonRequestRepository.delete(id);
@@ -102,24 +97,24 @@ public class Worker extends Thread {
     }
 
 
-    private void workWithLegalPersonRepository(UUID id) {
+    private void workWithLegalPersonRepositories(UUID id) {
         try {
             LegalPersonRequest legalPersonRequest = legalPersonRequestRepository.getById(id);
-            String sts = legalPersonRequest.getSts();
+            Long INN = legalPersonRequest.getInn();
 
-            ResponseWithFine response = responseRepository.findBySts(sts);
+            LegalPersonResponse response = legalPersonResponseRepository.findByINN(INN);
             if (response == null) {
 
-                 response = ResponseWithFine.builder().
+                response = LegalPersonResponse.LegalResponseBuilder().
                         amountOfAccrual(new BigDecimal(44)).
                         amountOfPaid(new BigDecimal(44)).
                         numberOfResolution(123).
-                        sts(sts).
+                        inn(INN).
                         dateOfResolution(new Date()).
                         articleOfKoap("21.1").
                         build();
 
-                responseRepository.save(response);
+                legalPersonResponseRepository.save(response);
             }
             legalPersonRequestRepository.delete(id);
         } catch (SmvServerException e) {

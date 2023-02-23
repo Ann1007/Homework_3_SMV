@@ -14,7 +14,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class InfoOfFineNaturalPerson {
 
-    // @org.hibernate.annotations.Type(type="org.hibernate.type.UUIDCharType")
     private UUID id;
     private BigDecimal amountOfAccrual;
     private BigDecimal amountOfPaid;

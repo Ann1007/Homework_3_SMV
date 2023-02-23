@@ -6,5 +6,6 @@
     <include file="01-changeset-natural-person-request-table.xml" relativeToChangelogFile="true"/>
     <include file="01-changeset-legal-person-request-table.xml" relativeToChangelogFile="true"/>
     <include file="01-changeset-natural-person-fine-info-table.xml" relativeToChangelogFile="true"/>
-    <include file="01-changeset-response-with-fine-table.xml" relativeToChangelogFile="true"/>
+    <include file="01-changeset-natural-person-response-table.xml" relativeToChangelogFile="true"/>
+    <include file="01-changeset-legal-person-response-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

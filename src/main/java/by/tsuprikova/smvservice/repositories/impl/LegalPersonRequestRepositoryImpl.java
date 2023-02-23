@@ -15,9 +15,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class LegalPersonRequestRepositoryImpl implements LegalPersonRequestRepository {
 
-    private final String INSERT_REQUEST = "INSERT INTO legal_person_request (id,sts,inn) VALUES (?,?,?)";
+    private final String INSERT_REQUEST = "INSERT INTO legal_person_request (id,inn) VALUES (?,?)";
     private final String SELECT_FIRST_ID = "SELECT id FROM legal_person_request LIMIT 1";
-    private final String SELECT_REQUEST_BY_ID = "SELECT id,sts,inn FROM legal_person_request WHERE id=?";
+    private final String SELECT_REQUEST_BY_ID = "SELECT id,inn FROM legal_person_request WHERE id=?";
     private final String DELETE_REQUEST_BY_ID = "DELETE FROM legal_person_request WHERE id=?";
 
     private final JdbcTemplate jdbcTemplate;
@@ -37,14 +37,13 @@ public class LegalPersonRequestRepositoryImpl implements LegalPersonRequestRepos
     }
 
 
-
     @Override
     public LegalPersonRequest save(LegalPersonRequest request) throws SmvServerException {
         LegalPersonRequest insertRequest;
         try {
             UUID id = UUID.randomUUID();
             request.setId(id);
-            jdbcTemplate.update(INSERT_REQUEST, request.getId(), request.getSts(), request.getInn());
+            jdbcTemplate.update(INSERT_REQUEST, request.getId(), request.getInn());
             insertRequest = getById(id);
 
         } catch (DataAccessException e) {
@@ -63,7 +62,6 @@ public class LegalPersonRequestRepositoryImpl implements LegalPersonRequestRepos
                     (rs, rowNum) ->
                             new LegalPersonRequest(
                                     rs.getObject("id", java.util.UUID.class),
-                                    rs.getString("sts"),
                                     rs.getLong("inn")
                             )
             );

@@ -25,7 +25,7 @@ public class LegalPersonRequestServiceImpl implements LegalPersonRequestService 
 
         try {
             LegalPersonRequest savedRequest = legalPersonRequestRepository.save(legalPersonRequest);
-            log.info("the legal person request was successfully saved with sts '{}', id={} ", savedRequest.getSts(), savedRequest.getId());
+            log.info("the legal person request was successfully saved with inn= '{}', id={} ", savedRequest.getInn(), savedRequest.getId());
             responseEntity = new ResponseEntity<>(savedRequest, HttpStatus.ACCEPTED);
         } catch (SmvServerException e) {
             log.error(e.getMessage());
