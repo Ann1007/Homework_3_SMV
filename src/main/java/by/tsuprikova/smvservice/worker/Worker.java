@@ -23,14 +23,15 @@ public class Worker extends Thread {
     private LegalPersonRequestRepository legalPersonRequestRepository;
     private LegalPersonResponseRepository legalPersonResponseRepository;
 
+    protected static boolean isStopped=false;
 
     @Override
     public void run() {
 
-        while (true) {
+        while (!isStopped) {
 
             log.info("Worker is working....");
-            while (true) {
+            while (!isStopped) {
                 try {
                     UUID firstNaturalPersonRequestId = naturalPersonRequestRepository.findFirstId();
                     UUID firstLegalPersonRequestId = legalPersonRequestRepository.findFirstId();
@@ -38,12 +39,13 @@ public class Worker extends Thread {
                     while (firstNaturalPersonRequestId == null && firstLegalPersonRequestId == null) {
                         try {
                             Thread.sleep(300);
+                            firstNaturalPersonRequestId = naturalPersonRequestRepository.findFirstId();
+                            firstLegalPersonRequestId = legalPersonRequestRepository.findFirstId();
 
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        firstNaturalPersonRequestId = naturalPersonRequestRepository.findFirstId();
-                        firstLegalPersonRequestId = legalPersonRequestRepository.findFirstId();
+
                     }
 
                     if (firstNaturalPersonRequestId != null) {
