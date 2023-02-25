@@ -1,5 +1,6 @@
 package by.tsuprikova.smvservice.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class LegalPersonResponse extends ResponseWithFine {
 
+    @Schema(description = "taxpayer identification number(ИНН - идентификационный номер налогоплательщика)")
     private Long inn;
 
     @Builder(builderMethodName = "LegalResponseBuilder")

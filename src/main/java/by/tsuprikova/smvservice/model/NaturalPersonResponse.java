@@ -1,5 +1,6 @@
 package by.tsuprikova.smvservice.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -11,6 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class NaturalPersonResponse extends ResponseWithFine {
 
+    @Schema(description = "vehicle certificate (СТС - свидетельство транспортного средства)", example = "98 ут 253901")
     private String sts;
 
     @Builder(builderMethodName = "responseBuilder")
