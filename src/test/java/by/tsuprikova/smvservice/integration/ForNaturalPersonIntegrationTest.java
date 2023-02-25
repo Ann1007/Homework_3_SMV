@@ -1,9 +1,11 @@
-package by.tsuprikova.smvservice;
+package by.tsuprikova.smvservice.integration;
 
 
 import by.tsuprikova.smvservice.model.NaturalPersonRequest;
+import by.tsuprikova.smvservice.model.NaturalPersonResponse;
 import by.tsuprikova.smvservice.model.ResponseWithFine;
-import by.tsuprikova.smvservice.repositories.ResponseRepository;
+import by.tsuprikova.smvservice.repositories.NaturalPersonRequestRepository;
+import by.tsuprikova.smvservice.repositories.NaturalPersonResponseRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -27,7 +30,7 @@ import java.util.UUID;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-
+@ActiveProfiles("test")
 public class ForNaturalPersonIntegrationTest {
 
     @Autowired
@@ -40,7 +43,10 @@ public class ForNaturalPersonIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private ResponseRepository responseRepository;
+    private NaturalPersonResponseRepository responseRepository;
+
+    @Autowired
+    private NaturalPersonRequestRepository requestRepository;
 
     private NaturalPersonRequest naturalPersonRequest;
 
@@ -87,14 +93,18 @@ public class ForNaturalPersonIntegrationTest {
     @Test
     void getResponseWithFineByStsNotNull() throws Exception {
 
+        requestRepository.save(naturalPersonRequest);
+
+        Thread.sleep(1000);
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/smv/natural_person/get_response").
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(naturalPersonRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value())).
                 andReturn();
 
+
         String resultContext = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-        ResponseWithFine resultResponseWithFine = objectMapper.readValue(resultContext, ResponseWithFine.class);
+        NaturalPersonResponse resultResponseWithFine = objectMapper.readValue(resultContext, NaturalPersonResponse.class);
 
         Assertions.assertNotNull(resultResponseWithFine);
         Assertions.assertEquals("98 ут 253901", resultResponseWithFine.getSts());
@@ -128,6 +138,8 @@ public class ForNaturalPersonIntegrationTest {
     @Test
     void deleteResponseWithFineByValidId() throws Exception {
 
+        requestRepository.save(naturalPersonRequest);
+        Thread.sleep(1000);
         ResponseWithFine response = responseRepository.findBySts(naturalPersonRequest.getSts());
         UUID id = response.getId();
         mockMvc.perform(MockMvcRequestBuilders.delete("/smv/natural_person/response/{id}", id)).

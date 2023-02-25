@@ -2,10 +2,9 @@ package by.tsuprikova.smvservice.controller;
 
 
 import by.tsuprikova.smvservice.model.NaturalPersonRequest;
-import by.tsuprikova.smvservice.model.ResponseWithFine;
+import by.tsuprikova.smvservice.model.NaturalPersonResponse;
 import by.tsuprikova.smvservice.repositories.NaturalPersonRequestRepository;
-import by.tsuprikova.smvservice.repositories.ResponseRepository;
-
+import by.tsuprikova.smvservice.repositories.NaturalPersonResponseRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,12 +17,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -36,8 +35,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-
-public class NaturalPersonControllerTest {
+@ActiveProfiles("test")
+public class NaturalPersonControllerUnitTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -52,10 +51,10 @@ public class NaturalPersonControllerTest {
     private NaturalPersonRequestRepository requestRepository;
 
     @MockBean
-    private ResponseRepository responseRepository;
+    private NaturalPersonResponseRepository responseRepository;
 
     private NaturalPersonRequest naturalPersonRequest;
-    private ResponseWithFine responseWithFine;
+    private NaturalPersonResponse response;
 
 
     @BeforeEach
@@ -65,17 +64,17 @@ public class NaturalPersonControllerTest {
         String sts = "59 ут 123456";
         naturalPersonRequest.setSts(sts);
         naturalPersonRequest.setId(UUID.randomUUID());
-        responseWithFine = new ResponseWithFine();
+
+        response = new NaturalPersonResponse();
         BigDecimal amountOfAccrual = new BigDecimal(28);
         BigDecimal amountOfPaid = new BigDecimal(28);
         int numberOfResolution = 321521;
         String articleOfKoap = "21.3";
-        responseWithFine.setSts(sts);
-        responseWithFine.setAmountOfAccrual(amountOfAccrual);
-        responseWithFine.setArticleOfKoap(articleOfKoap);
-        responseWithFine.setAmountOfPaid(amountOfPaid);
-        responseWithFine.setNumberOfResolution(numberOfResolution);
-
+        response.setSts(sts);
+        response.setAmountOfAccrual(amountOfAccrual);
+        response.setArticleOfKoap(articleOfKoap);
+        response.setAmountOfPaid(amountOfPaid);
+        response.setNumberOfResolution(numberOfResolution);
 
     }
 
@@ -91,12 +90,11 @@ public class NaturalPersonControllerTest {
                 andExpect(MockMvcResultMatchers.jsonPath("$.sts").value(naturalPersonRequest.getSts())).
                 andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
 
-
     }
 
 
     @Test
-    void SaveInValidNaturalPersonRequestTest() throws Exception {
+    void SaveInvalidNaturalPersonRequestTest() throws Exception {
 
         NaturalPersonRequest invalidRequest = new NaturalPersonRequest();
         invalidRequest.setSts("");
@@ -107,14 +105,13 @@ public class NaturalPersonControllerTest {
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value())).
                 andExpect(MockMvcResultMatchers.jsonPath("$.sts").value("поле стс не может быть пустое")).
                 andExpect(mvcResult -> mvcResult.getResolvedException().getClass().equals(MethodArgumentNotValidException.class));
-
     }
 
 
     @Test
     void getResponseWithFineByStsNotNull() throws Exception {
 
-        Mockito.when(responseRepository.findBySts(any(String.class))).thenReturn(responseWithFine);
+        Mockito.when(responseRepository.findBySts(any(String.class))).thenReturn(response);
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/smv/natural_person/get_response").
                         contentType(MediaType.APPLICATION_JSON).
@@ -124,7 +121,7 @@ public class NaturalPersonControllerTest {
 
 
         String resultContext = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-        ResponseWithFine resultResponseWithFine = objectMapper.readValue(resultContext, ResponseWithFine.class);
+        NaturalPersonResponse resultResponseWithFine = objectMapper.readValue(resultContext, NaturalPersonResponse.class);
 
         Assertions.assertNotNull(resultResponseWithFine);
         Assertions.assertEquals("59 ут 123456", resultResponseWithFine.getSts());
@@ -132,7 +129,6 @@ public class NaturalPersonControllerTest {
         Assertions.assertEquals(321521, resultResponseWithFine.getNumberOfResolution());
         Assertions.assertEquals(new BigDecimal(28), resultResponseWithFine.getAmountOfPaid());
         Assertions.assertEquals("21.3", resultResponseWithFine.getArticleOfKoap());
-
 
     }
 
@@ -164,8 +160,9 @@ public class NaturalPersonControllerTest {
 
     }
 
+
     @Test
-    void deleteResponseWithFineByInValidId() throws Exception {
+    void deleteResponseWithFineByInvalidId() throws Exception {
 
         int kol = 0;
         UUID id = UUID.randomUUID();

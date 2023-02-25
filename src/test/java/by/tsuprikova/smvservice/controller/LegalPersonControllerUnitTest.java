@@ -2,13 +2,10 @@ package by.tsuprikova.smvservice.controller;
 
 
 import by.tsuprikova.smvservice.model.LegalPersonRequest;
-import by.tsuprikova.smvservice.model.ResponseWithFine;
+import by.tsuprikova.smvservice.model.LegalPersonResponse;
 import by.tsuprikova.smvservice.repositories.LegalPersonRequestRepository;
-import by.tsuprikova.smvservice.repositories.ResponseRepository;
+import by.tsuprikova.smvservice.repositories.LegalPersonResponseRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,27 +16,30 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-
-public class LegalPersonControllerTest {
+@ActiveProfiles("test")
+public class LegalPersonControllerUnitTest {
 
     @LocalServerPort
     private int port;
@@ -54,32 +54,31 @@ public class LegalPersonControllerTest {
     private LegalPersonRequestRepository requestRepository;
 
     @MockBean
-    private ResponseRepository responseRepository;
+    private LegalPersonResponseRepository responseRepository;
 
     private LegalPersonRequest request;
-    private ResponseWithFine responseWithFine;
+    private LegalPersonResponse response;
 
-    @BeforeEach
+   @BeforeEach
     void init() {
 
-        String sts = "13 са 111118";
+        Long inn = 1234567890L;
         request = new LegalPersonRequest();
         request.setId(UUID.randomUUID());
-        request.setSts(sts);
-        request.setInn(2345676435L);
+        request.setInn(inn);
 
-        responseWithFine = new ResponseWithFine();
+        response = new LegalPersonResponse();
 
         BigDecimal amountOfAccrual = new BigDecimal(44);
         BigDecimal amountOfPaid = new BigDecimal(44);
         int numberOfResolution = 1212;
         String articleOfKoap = "32.1";
-        responseWithFine.setSts(sts);
-        responseWithFine.setAmountOfAccrual(amountOfAccrual);
-        responseWithFine.setArticleOfKoap(articleOfKoap);
-        responseWithFine.setAmountOfPaid(amountOfPaid);
-        responseWithFine.setId(UUID.randomUUID());
-        responseWithFine.setNumberOfResolution(numberOfResolution);
+        response.setInn(inn);
+        response.setAmountOfAccrual(amountOfAccrual);
+        response.setArticleOfKoap(articleOfKoap);
+        response.setAmountOfPaid(amountOfPaid);
+        response.setId(UUID.randomUUID());
+        response.setNumberOfResolution(numberOfResolution);
     }
 
 
@@ -93,7 +92,6 @@ public class LegalPersonControllerTest {
                         content(objectMapper.writeValueAsString(request))).
                 andExpect(status().is(HttpStatus.ACCEPTED.value())).
                 andExpect(jsonPath("$.id").exists()).
-                andExpect(jsonPath("$.sts").value(request.getSts())).
                 andExpect(jsonPath("$.inn").value(request.getInn()));
     }
 
@@ -102,14 +100,12 @@ public class LegalPersonControllerTest {
     void SaveInValidNaturalPersonRequestTest() throws Exception {
 
         LegalPersonRequest invalidRequest = new LegalPersonRequest();
-        invalidRequest.setSts("");
         invalidRequest.setInn(544L);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/smv/legal_person/save_request").
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(invalidRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value())).
-                andExpect(MockMvcResultMatchers.jsonPath("$.sts").value("поле стс не может быть пустое")).
                 andExpect(MockMvcResultMatchers.jsonPath("$.inn").value("поле ИНН должно состоять минимум из 10 цифр")).
                 andExpect(mvcResult -> mvcResult.getResolvedException().getClass().equals(MethodArgumentNotValidException.class));
 
@@ -119,7 +115,7 @@ public class LegalPersonControllerTest {
     @Test
     void getResponseWithFineByStsNotNull() throws Exception {
 
-        Mockito.when(responseRepository.findBySts(any(String.class))).thenReturn(responseWithFine);
+        Mockito.when(responseRepository.findByINN(any(Long.class))).thenReturn(response);
 
         MvcResult result = mockMvc.perform(post("/smv/legal_person/get_response").
                         contentType(MediaType.APPLICATION_JSON).
@@ -128,9 +124,9 @@ public class LegalPersonControllerTest {
                 andReturn();
 
         String resultContext = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-        ResponseWithFine resultResponseWithFine = objectMapper.readValue(resultContext, ResponseWithFine.class);
+        LegalPersonResponse resultResponseWithFine = objectMapper.readValue(resultContext, LegalPersonResponse.class);
         assertNotNull(resultResponseWithFine);
-        assertEquals("13 са 111118", resultResponseWithFine.getSts());
+        assertEquals(1234567890L, resultResponseWithFine.getInn());
         assertEquals(new BigDecimal(44), resultResponseWithFine.getAmountOfAccrual());
         assertEquals(1212, resultResponseWithFine.getNumberOfResolution());
         assertEquals(new BigDecimal(44), resultResponseWithFine.getAmountOfPaid());
@@ -141,7 +137,7 @@ public class LegalPersonControllerTest {
     @Test
     void getResponseWithFineByStIsNull() throws Exception {
 
-        Mockito.when(responseRepository.findBySts(any(String.class))).thenReturn(null);
+        Mockito.when(responseRepository.findByINN(any(Long.class))).thenReturn(null);
 
         mockMvc.perform(post("/smv/legal_person/get_response").
                         contentType(MediaType.APPLICATION_JSON).
