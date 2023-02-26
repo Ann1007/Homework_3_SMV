@@ -1,32 +1,35 @@
 package by.tsuprikova.smvservice.worker;
 
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Component
 @Slf4j
-public class StartWorker {
+@RequiredArgsConstructor
+public class WorkerInit {
 
-    @Autowired
-    private Worker worker;
+    private final Worker worker;
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
+
 
     @PostConstruct
-    public void startWorker() {
+    public void start() {
         log.info("Worker is starting --------------------------");
-        worker.setName("Worker");
-        worker.start();
+        executor.execute(worker);
 
     }
 
+
     @PreDestroy
     public void finish() {
-        Worker.isStopped=true;
+        executor.shutdown();
         log.info("Worker closed --------------------------");
     }
 

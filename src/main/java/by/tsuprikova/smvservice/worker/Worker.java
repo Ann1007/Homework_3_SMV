@@ -15,7 +15,7 @@ import java.util.UUID;
 @Component
 @AllArgsConstructor
 @Slf4j
-public class Worker extends Thread {
+public class Worker implements Runnable {
 
     private NaturalPersonRequestRepository naturalPersonRequestRepository;
     private NaturalPersonInfoRepository infoRepository;
@@ -23,44 +23,39 @@ public class Worker extends Thread {
     private LegalPersonRequestRepository legalPersonRequestRepository;
     private LegalPersonResponseRepository legalPersonResponseRepository;
 
-    protected static boolean isStopped=false;
 
     @Override
     public void run() {
 
-        while (!isStopped) {
+        log.info("Worker is working....");
 
-            log.info("Worker is working....");
-            while (!isStopped) {
-                try {
-                    UUID firstNaturalPersonRequestId = naturalPersonRequestRepository.findFirstId();
-                    UUID firstLegalPersonRequestId = legalPersonRequestRepository.findFirstId();
+        while (true) {
+            try {
+                UUID firstNaturalPersonRequestId = naturalPersonRequestRepository.findFirstId();
+                UUID firstLegalPersonRequestId = legalPersonRequestRepository.findFirstId();
 
-                    while (firstNaturalPersonRequestId == null && firstLegalPersonRequestId == null) {
-                        try {
-                            Thread.sleep(300);
-                            firstNaturalPersonRequestId = naturalPersonRequestRepository.findFirstId();
-                            firstLegalPersonRequestId = legalPersonRequestRepository.findFirstId();
+                while (firstNaturalPersonRequestId == null && firstLegalPersonRequestId == null) {
+                    try {
+                        Thread.sleep(300);
+                        firstNaturalPersonRequestId = naturalPersonRequestRepository.findFirstId();
+                        firstLegalPersonRequestId = legalPersonRequestRepository.findFirstId();
 
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-
-                    if (firstNaturalPersonRequestId != null) {
-                        workWithNaturalPersonRepositories(firstNaturalPersonRequestId);
-                    }
-                    if (firstLegalPersonRequestId != null) {
-                        workWithLegalPersonRepositories(firstLegalPersonRequestId);
-                    }
-
-                } catch (SmvServerException e) {
-                    log.error(e.getMessage());
                 }
 
+                if (firstNaturalPersonRequestId != null) {
+                    workWithNaturalPersonRepositories(firstNaturalPersonRequestId);
+                }
+                if (firstLegalPersonRequestId != null) {
+                    workWithLegalPersonRepositories(firstLegalPersonRequestId);
+                }
 
+            } catch (SmvServerException e) {
+                log.error(e.getMessage());
             }
+
         }
 
     }
