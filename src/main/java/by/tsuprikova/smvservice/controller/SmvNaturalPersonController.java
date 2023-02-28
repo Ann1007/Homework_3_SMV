@@ -21,7 +21,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Controller for natural person requests", description = "accepts a request from natural person and returns a response with a fine")
-@RequestMapping("/smv/natural_person")
+@RequestMapping("api/v1/smv/natural_person")
 public class SmvNaturalPersonController {
 
     private final NaturalPersonResponseService naturalPersonResponseService;
@@ -36,7 +36,7 @@ public class SmvNaturalPersonController {
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
             @ApiResponse(responseCode = "500", description = "The problem with DB", content = @Content)})
 
-    @PostMapping("/save_request")
+    @PostMapping("/request")
     public ResponseEntity<NaturalPersonRequest> saveRequest(@Valid @RequestBody NaturalPersonRequest naturalPersonRequest) {
 
         return naturalPersonRequestService.saveRequestForFine(naturalPersonRequest);
@@ -53,7 +53,7 @@ public class SmvNaturalPersonController {
             @ApiResponse(responseCode = "404", description = "The response is not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "The problem with DB", content = @Content)})
 
-    @PostMapping("/get_response")
+    @PostMapping("/response")
     public ResponseEntity<NaturalPersonResponse> getResponse(@Valid @RequestBody NaturalPersonRequest naturalPersonRequest) {
 
         return naturalPersonResponseService.getResponseForFine(naturalPersonRequest.getSts());

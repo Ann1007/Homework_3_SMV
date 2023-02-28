@@ -87,7 +87,7 @@ public class LegalPersonControllerUnitTest {
 
         Mockito.doReturn(request).when(requestRepository).save(any(LegalPersonRequest.class));
 
-        mockMvc.perform(post("/smv/legal_person/save_request").
+        mockMvc.perform(post("/api/v1/smv/legal_person/request").
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(request))).
                 andExpect(status().is(HttpStatus.ACCEPTED.value())).
@@ -102,7 +102,7 @@ public class LegalPersonControllerUnitTest {
         LegalPersonRequest invalidRequest = new LegalPersonRequest();
         invalidRequest.setInn(544L);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/smv/legal_person/save_request").
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/legal_person/request").
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(invalidRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value())).
@@ -117,7 +117,7 @@ public class LegalPersonControllerUnitTest {
 
         Mockito.when(responseRepository.findByINN(any(Long.class))).thenReturn(response);
 
-        MvcResult result = mockMvc.perform(post("/smv/legal_person/get_response").
+        MvcResult result = mockMvc.perform(post("/api/v1/smv/legal_person/response").
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(request))).
                 andExpect(status().is(HttpStatus.OK.value())).
@@ -139,7 +139,7 @@ public class LegalPersonControllerUnitTest {
 
         Mockito.when(responseRepository.findByINN(any(Long.class))).thenReturn(null);
 
-        mockMvc.perform(post("/smv/legal_person/get_response").
+        mockMvc.perform(post("/api/v1/smv/legal_person/response").
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(request))).
                 andExpect(status().is(HttpStatus.NOT_FOUND.value()));
@@ -153,7 +153,7 @@ public class LegalPersonControllerUnitTest {
         UUID id = UUID.randomUUID();
         Mockito.when(responseRepository.deleteById(any(UUID.class))).thenReturn(kol);
 
-        mockMvc.perform(delete("/smv/legal_person/response/{id}", id)).
+        mockMvc.perform(delete("/api/v1/smv/legal_person/response/{id}", id)).
                 andExpect(status().is(HttpStatus.OK.value()));
 
         Mockito.verify(responseRepository, Mockito.times(1)).deleteById(id);
@@ -167,7 +167,7 @@ public class LegalPersonControllerUnitTest {
         UUID id = UUID.randomUUID();
         Mockito.when(responseRepository.deleteById(any(UUID.class))).thenReturn(kol);
 
-        mockMvc.perform(delete("/smv/legal_person/response/{id}", id)).
+        mockMvc.perform(delete("/api/v1/smv/legal_person/response/{id}", id)).
                 andExpect(status().is(HttpStatus.METHOD_NOT_ALLOWED.value()));
 
         Mockito.verify(responseRepository, Mockito.times(1)).deleteById(id);

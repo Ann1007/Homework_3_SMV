@@ -63,7 +63,7 @@ public class ForNaturalPersonIntegrationTest {
     @Test
     void SaveValidNaturalPersonRequestTest() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/smv/natural_person/save_request").
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/natural_person/request").
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(naturalPersonRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.ACCEPTED.value())).
@@ -80,7 +80,7 @@ public class ForNaturalPersonIntegrationTest {
         NaturalPersonRequest invalidRequest = new NaturalPersonRequest();
         invalidRequest.setSts("");
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/smv/natural_person/save_request").
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/natural_person/request").
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(invalidRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value())).
@@ -96,7 +96,7 @@ public class ForNaturalPersonIntegrationTest {
         requestRepository.save(naturalPersonRequest);
 
         Thread.sleep(1000);
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/smv/natural_person/get_response").
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/natural_person/response").
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(naturalPersonRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value())).
@@ -125,7 +125,7 @@ public class ForNaturalPersonIntegrationTest {
 
         ResponseWithFine response = responseRepository.findBySts(wrongRequest.getSts());
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/smv/natural_person/get_response").
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/natural_person/response").
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(wrongRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.NOT_FOUND.value()));
@@ -142,7 +142,7 @@ public class ForNaturalPersonIntegrationTest {
         Thread.sleep(1000);
         ResponseWithFine response = responseRepository.findBySts(naturalPersonRequest.getSts());
         UUID id = response.getId();
-        mockMvc.perform(MockMvcRequestBuilders.delete("/smv/natural_person/response/{id}", id)).
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/smv/natural_person/response/{id}", id)).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
 
     }
@@ -152,7 +152,7 @@ public class ForNaturalPersonIntegrationTest {
     void deleteResponseWithFineByInValidId() throws Exception {
 
         UUID id = UUID.randomUUID();
-        mockMvc.perform(MockMvcRequestBuilders.delete("/smv/natural_person/response/{id}", id)).
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/smv/natural_person/response/{id}", id)).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.METHOD_NOT_ALLOWED.value()));
 
     }

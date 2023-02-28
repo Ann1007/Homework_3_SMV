@@ -83,7 +83,7 @@ public class NaturalPersonControllerUnitTest {
     void SaveValidNaturalPersonRequestTest() throws Exception {
 
         Mockito.doReturn(naturalPersonRequest).when(requestRepository).save(any(NaturalPersonRequest.class));
-        mockMvc.perform(MockMvcRequestBuilders.post("/smv/natural_person/save_request").
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/natural_person/request").
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(naturalPersonRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.ACCEPTED.value())).
@@ -99,7 +99,7 @@ public class NaturalPersonControllerUnitTest {
         NaturalPersonRequest invalidRequest = new NaturalPersonRequest();
         invalidRequest.setSts("");
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/smv/natural_person/save_request").
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/natural_person/request").
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(invalidRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value())).
@@ -113,7 +113,7 @@ public class NaturalPersonControllerUnitTest {
 
         Mockito.when(responseRepository.findBySts(any(String.class))).thenReturn(response);
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/smv/natural_person/get_response").
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/natural_person/response").
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(naturalPersonRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value())).
@@ -138,7 +138,7 @@ public class NaturalPersonControllerUnitTest {
 
         Mockito.when(responseRepository.findBySts(any(String.class))).thenReturn(null);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/smv/natural_person/get_response").
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/natural_person/response").
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(naturalPersonRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.NOT_FOUND.value()));
@@ -153,7 +153,7 @@ public class NaturalPersonControllerUnitTest {
         UUID id = UUID.randomUUID();
         Mockito.when(responseRepository.deleteById(any(UUID.class))).thenReturn(kol);
 
-        mockMvc.perform(delete("/smv/natural_person/response/{id}", id)).
+        mockMvc.perform(delete("/api/v1/smv/natural_person/response/{id}", id)).
                 andExpect(status().is(HttpStatus.OK.value()));
 
         Mockito.verify(responseRepository, Mockito.times(1)).deleteById(id);
@@ -168,7 +168,7 @@ public class NaturalPersonControllerUnitTest {
         UUID id = UUID.randomUUID();
         Mockito.when(responseRepository.deleteById(any(UUID.class))).thenReturn(kol);
 
-        mockMvc.perform(delete("/smv/natural_person/response/{id}", id)).
+        mockMvc.perform(delete("/api/v1/smv/natural_person/response/{id}", id)).
                 andExpect(status().is(HttpStatus.METHOD_NOT_ALLOWED.value()));
 
         Mockito.verify(responseRepository, Mockito.times(1)).deleteById(id);

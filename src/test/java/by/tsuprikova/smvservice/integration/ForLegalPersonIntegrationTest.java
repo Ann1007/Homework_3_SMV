@@ -24,7 +24,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.UUID;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -62,7 +61,7 @@ public class ForLegalPersonIntegrationTest {
     @Test
     void SaveValidLegalPersonRequestTest() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/smv/legal_person/save_request").
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/legal_person/request").
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(legalPersonRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.ACCEPTED.value())).
@@ -78,7 +77,7 @@ public class ForLegalPersonIntegrationTest {
         LegalPersonRequest invalidRequest = new LegalPersonRequest();
         invalidRequest.setInn(544L);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/smv/legal_person/save_request").
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/legal_person/request").
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(invalidRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value())).
@@ -93,7 +92,7 @@ public class ForLegalPersonIntegrationTest {
         requestRepository.save(legalPersonRequest);
         Thread.sleep(1000);
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/smv/legal_person/get_response").
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/legal_person/response").
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(legalPersonRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value())).
@@ -118,7 +117,7 @@ public class ForLegalPersonIntegrationTest {
         LegalPersonRequest wrongRequest = new LegalPersonRequest();
         wrongRequest.setInn(5445676876L);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/smv/legal_person/get_response").
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/legal_person/response").
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(wrongRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.NOT_FOUND.value()));
@@ -134,7 +133,7 @@ public class ForLegalPersonIntegrationTest {
 
         ResponseWithFine response1 = responseRepository.findByINN(legalPersonRequest.getInn());
         UUID id = response1.getId();
-        mockMvc.perform(MockMvcRequestBuilders.delete("/smv/legal_person/response/{id}", id)).
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/smv/legal_person/response/{id}", id)).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
 
     }
@@ -144,7 +143,7 @@ public class ForLegalPersonIntegrationTest {
     void deleteResponseWithFineByInValidId() throws Exception {
 
         UUID id = UUID.randomUUID();
-        mockMvc.perform(MockMvcRequestBuilders.delete("/smv/legal_person/response/{id}", id)).
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/smv/legal_person/response/{id}", id)).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.METHOD_NOT_ALLOWED.value()));
 
 
