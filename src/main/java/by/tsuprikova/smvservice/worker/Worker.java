@@ -1,6 +1,6 @@
 package by.tsuprikova.smvservice.worker;
 
-import by.tsuprikova.smvservice.exceptions.SmvServerException;
+import by.tsuprikova.smvservice.exceptions.SmvServiceException;
 import by.tsuprikova.smvservice.model.*;
 import by.tsuprikova.smvservice.repositories.*;
 import lombok.AllArgsConstructor;
@@ -27,32 +27,31 @@ public class Worker implements Runnable {
     @Override
     public void run() {
 
-        log.info("Worker is working....");
-
+        //log.info("Worker is working....");
         while (true) {
             try {
-                UUID firstNaturalPersonRequestId = naturalPersonRequestRepository.findFirstId();
-                UUID firstLegalPersonRequestId = legalPersonRequestRepository.findFirstId();
+                UUID naturalPersonRequestId = naturalPersonRequestRepository.findRandomId();
+                UUID legalPersonRequestId = legalPersonRequestRepository.findRandomId();
 
-                while (firstNaturalPersonRequestId == null && firstLegalPersonRequestId == null) {
+                while (naturalPersonRequestId == null && legalPersonRequestId == null) {
                     try {
                         Thread.sleep(300);
-                        firstNaturalPersonRequestId = naturalPersonRequestRepository.findFirstId();
-                        firstLegalPersonRequestId = legalPersonRequestRepository.findFirstId();
+                        naturalPersonRequestId = naturalPersonRequestRepository.findRandomId();
+                        legalPersonRequestId = legalPersonRequestRepository.findRandomId();
 
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
 
-                if (firstNaturalPersonRequestId != null) {
-                    workWithNaturalPersonRepositories(firstNaturalPersonRequestId);
+                if (naturalPersonRequestId != null) {
+                    workWithNaturalPersonRepositories(naturalPersonRequestId);
                 }
-                if (firstLegalPersonRequestId != null) {
-                    workWithLegalPersonRepositories(firstLegalPersonRequestId);
+                if (legalPersonRequestId != null) {
+                    workWithLegalPersonRepositories(legalPersonRequestId);
                 }
 
-            } catch (SmvServerException e) {
+            } catch (SmvServiceException e) {
                 log.error(e.getMessage());
             }
 
@@ -86,7 +85,7 @@ public class Worker implements Runnable {
                 }
             }
             naturalPersonRequestRepository.delete(id);
-        } catch (SmvServerException e) {
+        } catch (SmvServiceException e) {
             log.error(e.getMessage());
         }
 
@@ -114,7 +113,7 @@ public class Worker implements Runnable {
                 legalPersonResponseRepository.save(response);
             }
             legalPersonRequestRepository.delete(id);
-        } catch (SmvServerException e) {
+        } catch (SmvServiceException e) {
             log.error(e.getMessage());
         }
 

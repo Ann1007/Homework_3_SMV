@@ -3,7 +3,7 @@ package by.tsuprikova.smvservice.integration;
 
 import by.tsuprikova.smvservice.model.NaturalPersonRequest;
 import by.tsuprikova.smvservice.model.NaturalPersonResponse;
-import by.tsuprikova.smvservice.model.ResponseWithFine;
+import by.tsuprikova.smvservice.model.Response;
 import by.tsuprikova.smvservice.repositories.NaturalPersonRequestRepository;
 import by.tsuprikova.smvservice.repositories.NaturalPersonResponseRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -123,7 +123,7 @@ public class ForNaturalPersonIntegrationTest {
         NaturalPersonRequest wrongRequest = new NaturalPersonRequest();
         wrongRequest.setSts("33 ув 435654");
 
-        ResponseWithFine response = responseRepository.findBySts(wrongRequest.getSts());
+        Response response = responseRepository.findBySts(wrongRequest.getSts());
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/natural_person/response").
                         contentType(MediaType.APPLICATION_JSON).
@@ -140,7 +140,7 @@ public class ForNaturalPersonIntegrationTest {
 
         requestRepository.save(naturalPersonRequest);
         Thread.sleep(1000);
-        ResponseWithFine response = responseRepository.findBySts(naturalPersonRequest.getSts());
+        Response response = responseRepository.findBySts(naturalPersonRequest.getSts());
         UUID id = response.getId();
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/smv/natural_person/response/{id}", id)).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));

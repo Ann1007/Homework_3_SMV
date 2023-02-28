@@ -1,6 +1,6 @@
 package by.tsuprikova.smvservice.repositories.impl;
 
-import by.tsuprikova.smvservice.exceptions.SmvServerException;
+import by.tsuprikova.smvservice.exceptions.SmvServiceException;
 import by.tsuprikova.smvservice.model.LegalPersonRequest;
 import by.tsuprikova.smvservice.repositories.LegalPersonRequestRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,29 +16,29 @@ import java.util.UUID;
 public class LegalPersonRequestRepositoryImpl implements LegalPersonRequestRepository {
 
     private final String INSERT_REQUEST = "INSERT INTO legal_person_request (id,inn) VALUES (?,?)";
-    private final String SELECT_FIRST_ID = "SELECT id FROM legal_person_request LIMIT 1";
+    private final String SELECT_RANDOM_ID = "SELECT id FROM legal_person_request LIMIT 1";
     private final String SELECT_REQUEST_BY_ID = "SELECT id,inn FROM legal_person_request WHERE id=?";
     private final String DELETE_REQUEST_BY_ID = "DELETE FROM legal_person_request WHERE id=?";
 
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public UUID findFirstId() throws SmvServerException {
+    public UUID findRandomId() throws SmvServiceException {
         UUID id;
         try {
-            id = jdbcTemplate.queryForObject(SELECT_FIRST_ID, UUID.class);
+            id = jdbcTemplate.queryForObject(SELECT_RANDOM_ID, UUID.class);
 
         } catch (EmptyResultDataAccessException e) {
             return null;
         } catch (DataAccessException e) {
-            throw new SmvServerException(e.getMessage());
+            throw new SmvServiceException(e.getMessage());
         }
         return id;
     }
 
 
     @Override
-    public LegalPersonRequest save(LegalPersonRequest request) throws SmvServerException {
+    public LegalPersonRequest save(LegalPersonRequest request) throws SmvServiceException {
         LegalPersonRequest insertRequest;
         try {
             UUID id = UUID.randomUUID();
@@ -47,7 +47,7 @@ public class LegalPersonRequestRepositoryImpl implements LegalPersonRequestRepos
             insertRequest = getById(id);
 
         } catch (DataAccessException e) {
-            throw new SmvServerException(e.getMessage());
+            throw new SmvServiceException(e.getMessage());
         }
 
         return insertRequest;
@@ -55,7 +55,7 @@ public class LegalPersonRequestRepositoryImpl implements LegalPersonRequestRepos
 
 
     @Override
-    public LegalPersonRequest getById(UUID id) throws SmvServerException {
+    public LegalPersonRequest getById(UUID id) throws SmvServiceException {
         LegalPersonRequest request;
         try {
             request = jdbcTemplate.queryForObject(SELECT_REQUEST_BY_ID, new Object[]{id},
@@ -66,19 +66,19 @@ public class LegalPersonRequestRepositoryImpl implements LegalPersonRequestRepos
                             )
             );
         } catch (DataAccessException e) {
-            throw new SmvServerException(e.getMessage());
+            throw new SmvServiceException(e.getMessage());
         }
         return request;
     }
 
 
     @Override
-    public int delete(UUID id) throws SmvServerException {
+    public int delete(UUID id) throws SmvServiceException {
         int kol = 0;
         try {
             kol = jdbcTemplate.update(DELETE_REQUEST_BY_ID, id);
         } catch (DataAccessException e) {
-            throw new SmvServerException(e.getMessage());
+            throw new SmvServiceException(e.getMessage());
         }
         return kol;
 

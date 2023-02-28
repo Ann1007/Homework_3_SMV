@@ -2,7 +2,7 @@ package by.tsuprikova.smvservice.integration;
 
 import by.tsuprikova.smvservice.model.LegalPersonRequest;
 import by.tsuprikova.smvservice.model.LegalPersonResponse;
-import by.tsuprikova.smvservice.model.ResponseWithFine;
+import by.tsuprikova.smvservice.model.Response;
 import by.tsuprikova.smvservice.repositories.LegalPersonRequestRepository;
 import by.tsuprikova.smvservice.repositories.LegalPersonResponseRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -131,7 +131,7 @@ public class ForLegalPersonIntegrationTest {
         requestRepository.save(legalPersonRequest);
         Thread.sleep(1000);
 
-        ResponseWithFine response1 = responseRepository.findByINN(legalPersonRequest.getInn());
+        Response response1 = responseRepository.findByINN(legalPersonRequest.getInn());
         UUID id = response1.getId();
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/smv/legal_person/response/{id}", id)).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));

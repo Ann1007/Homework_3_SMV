@@ -1,10 +1,8 @@
 package by.tsuprikova.smvservice.service.impl;
 
-import by.tsuprikova.smvservice.exceptions.SmvServerException;
+import by.tsuprikova.smvservice.exceptions.SmvServiceException;
 import by.tsuprikova.smvservice.model.LegalPersonResponse;
-import by.tsuprikova.smvservice.model.NaturalPersonResponse;
 import by.tsuprikova.smvservice.repositories.LegalPersonResponseRepository;
-import by.tsuprikova.smvservice.repositories.NaturalPersonResponseRepository;
 import by.tsuprikova.smvservice.service.LegalPersonResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,14 +26,14 @@ public class LegalPersonResponseServiceImpl implements LegalPersonResponseServic
         ResponseEntity<LegalPersonResponse> response;
         try {
             LegalPersonResponse responseWithFine = responseRepository.findByINN(INN);
-
             if (responseWithFine == null) {
                 log.info("legal person response is null for INN '{}'", INN);
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
+            log.info("legal person response was found for INN '{}'", INN);
             response = new ResponseEntity<>(responseWithFine, HttpStatus.OK);
 
-        } catch (SmvServerException e) {
+        } catch (SmvServiceException e) {
             log.error(e.getMessage());
             response = new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -58,7 +56,7 @@ public class LegalPersonResponseServiceImpl implements LegalPersonResponseServic
 
             responseEntity = new ResponseEntity<>(HttpStatus.OK);
             log.info("legal person response was successfully deleted with id={}", id);
-        } catch (SmvServerException e) {
+        } catch (SmvServiceException e) {
             log.error(e.getMessage());
             responseEntity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

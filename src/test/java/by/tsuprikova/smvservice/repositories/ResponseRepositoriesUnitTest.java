@@ -1,6 +1,6 @@
 package by.tsuprikova.smvservice.repositories;
 
-import by.tsuprikova.smvservice.exceptions.SmvServerException;
+import by.tsuprikova.smvservice.exceptions.SmvServiceException;
 import by.tsuprikova.smvservice.model.LegalPersonResponse;
 import by.tsuprikova.smvservice.model.NaturalPersonResponse;
 import by.tsuprikova.smvservice.repositories.impl.LegalPersonResponseRepositoryImpl;
@@ -65,7 +65,7 @@ public class ResponseRepositoriesUnitTest {
 
 
     @Test
-    void saveNaturalPersonResponseTest() throws SmvServerException {
+    void saveNaturalPersonResponseTest() throws SmvServiceException {
         naturalResponseRepository.save(naturalPersonResponse);
         NaturalPersonResponse createdResponse = naturalResponseRepository.findBySts(naturalPersonResponse.getSts());
         assertThat(createdResponse.getId()).isNotNull();
@@ -75,7 +75,7 @@ public class ResponseRepositoriesUnitTest {
 
 
     @Test
-    void getNaturalPersonResponseByValidStsTest() throws SmvServerException {
+    void getNaturalPersonResponseByValidStsTest() throws SmvServiceException {
         naturalResponseRepository.save(naturalPersonResponse);
         NaturalPersonResponse response = naturalResponseRepository.findBySts(naturalPersonResponse.getSts());
         assertThat(response).isNotNull();
@@ -85,7 +85,7 @@ public class ResponseRepositoriesUnitTest {
 
 
     @Test
-    void getNaturalPersonResponseByInvalidStsTest() throws SmvServerException {
+    void getNaturalPersonResponseByInvalidStsTest() throws SmvServiceException {
         String invalidSts = "34 00 67786";
         NaturalPersonResponse response = naturalResponseRepository.findBySts(invalidSts);
         assertThat(response).isNull();
@@ -94,7 +94,7 @@ public class ResponseRepositoriesUnitTest {
 
 
     @Test
-    void deleteNaturalPersonResponseByValidId() throws SmvServerException {
+    void deleteNaturalPersonResponseByValidId() throws SmvServiceException {
         naturalResponseRepository.save(naturalPersonResponse);
         NaturalPersonResponse response = naturalResponseRepository.findBySts(naturalPersonResponse.getSts());
         int result = naturalResponseRepository.deleteById(response.getId());
@@ -103,7 +103,7 @@ public class ResponseRepositoriesUnitTest {
 
 
     @Test
-    void deleteNaturalPersonResponseByInvalidId() throws SmvServerException {
+    void deleteNaturalPersonResponseByInvalidId() throws SmvServiceException {
 
         int result = naturalResponseRepository.deleteById(UUID.randomUUID());
         assertEquals(0, result);
@@ -111,7 +111,7 @@ public class ResponseRepositoriesUnitTest {
 
 
     @Test
-    void saveLegalPersonResponseTest() throws SmvServerException {
+    void saveLegalPersonResponseTest() throws SmvServiceException {
         legalResponseRepository.save(legalPersonResponse);
         LegalPersonResponse createdResponse = legalResponseRepository.findByINN(legalPersonResponse.getInn());
         assertThat(createdResponse.getId()).isNotNull();
@@ -120,7 +120,7 @@ public class ResponseRepositoriesUnitTest {
 
 
     @Test
-    void getLegalPersonResponseByValidStsTest() throws SmvServerException {
+    void getLegalPersonResponseByValidStsTest() throws SmvServiceException {
         legalResponseRepository.save(legalPersonResponse);
         LegalPersonResponse response = legalResponseRepository.findByINN(legalPersonResponse.getInn());
         assertThat(response).isNotNull();
@@ -130,7 +130,7 @@ public class ResponseRepositoriesUnitTest {
 
 
     @Test
-    void getLegalPersonResponseByInvalidStsTest() throws SmvServerException {
+    void getLegalPersonResponseByInvalidStsTest() throws SmvServiceException {
         Long invalidInn = 12222L;
         LegalPersonResponse response = legalResponseRepository.findByINN(invalidInn);
         assertThat(response).isNull();
@@ -139,7 +139,7 @@ public class ResponseRepositoriesUnitTest {
 
 
     @Test
-    void deleteLegalPersonResponseByValidId() throws SmvServerException {
+    void deleteLegalPersonResponseByValidId() throws SmvServiceException {
         legalResponseRepository.save(legalPersonResponse);
         LegalPersonResponse response = legalResponseRepository.findByINN(legalPersonResponse.getInn());
         int result = legalResponseRepository.deleteById(response.getId());
@@ -148,7 +148,7 @@ public class ResponseRepositoriesUnitTest {
 
 
     @Test
-    void deleteLegalPersonResponseByInvalidId() throws SmvServerException {
+    void deleteLegalPersonResponseByInvalidId() throws SmvServiceException {
 
         int result = legalResponseRepository.deleteById(UUID.randomUUID());
         assertEquals(0, result);

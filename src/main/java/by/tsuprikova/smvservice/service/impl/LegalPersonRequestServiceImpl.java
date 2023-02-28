@@ -1,7 +1,7 @@
 package by.tsuprikova.smvservice.service.impl;
 
 
-import by.tsuprikova.smvservice.exceptions.SmvServerException;
+import by.tsuprikova.smvservice.exceptions.SmvServiceException;
 import by.tsuprikova.smvservice.model.LegalPersonRequest;
 import by.tsuprikova.smvservice.repositories.LegalPersonRequestRepository;
 import by.tsuprikova.smvservice.service.LegalPersonRequestService;
@@ -27,7 +27,7 @@ public class LegalPersonRequestServiceImpl implements LegalPersonRequestService 
             LegalPersonRequest savedRequest = legalPersonRequestRepository.save(legalPersonRequest);
             log.info("the legal person request was successfully saved with inn= '{}', id={} ", savedRequest.getInn(), savedRequest.getId());
             responseEntity = new ResponseEntity<>(savedRequest, HttpStatus.ACCEPTED);
-        } catch (SmvServerException e) {
+        } catch (SmvServiceException e) {
             log.error(e.getMessage());
             responseEntity = new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

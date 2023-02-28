@@ -1,8 +1,7 @@
 package by.tsuprikova.smvservice.service.impl;
 
-import by.tsuprikova.smvservice.exceptions.SmvServerException;
+import by.tsuprikova.smvservice.exceptions.SmvServiceException;
 import by.tsuprikova.smvservice.model.NaturalPersonResponse;
-import by.tsuprikova.smvservice.model.ResponseWithFine;
 import by.tsuprikova.smvservice.repositories.NaturalPersonResponseRepository;
 import by.tsuprikova.smvservice.service.NaturalPersonResponseService;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +33,7 @@ public class NaturalPersonResponseServiceImpl implements NaturalPersonResponseSe
 
             responseEntity = new ResponseEntity<>(HttpStatus.OK);
             log.info("natural person response was successfully deleted with id={}", id);
-        } catch (SmvServerException e) {
+        } catch (SmvServiceException e) {
             log.error(e.getMessage());
             responseEntity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -54,9 +53,10 @@ public class NaturalPersonResponseServiceImpl implements NaturalPersonResponseSe
                 log.info("natural person response is null for sts '{}'", sts);
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
+            log.info("natural person response was found for sts '{}'", sts);
             response = new ResponseEntity<>(responseWithFine, HttpStatus.OK);
 
-        } catch (SmvServerException e) {
+        } catch (SmvServiceException e) {
             log.error(e.getMessage());
             response = new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

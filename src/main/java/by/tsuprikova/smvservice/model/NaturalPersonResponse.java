@@ -10,7 +10,7 @@ import java.util.UUID;
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class NaturalPersonResponse extends ResponseWithFine {
+public class NaturalPersonResponse extends Response {
 
     @Schema(description = "vehicle certificate (СТС - свидетельство транспортного средства)", example = "98 ут 253901")
     private String sts;

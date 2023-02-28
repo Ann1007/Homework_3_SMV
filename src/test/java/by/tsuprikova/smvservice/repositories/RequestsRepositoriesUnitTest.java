@@ -1,6 +1,6 @@
 package by.tsuprikova.smvservice.repositories;
 
-import by.tsuprikova.smvservice.exceptions.SmvServerException;
+import by.tsuprikova.smvservice.exceptions.SmvServiceException;
 import by.tsuprikova.smvservice.model.LegalPersonRequest;
 import by.tsuprikova.smvservice.model.NaturalPersonRequest;
 import by.tsuprikova.smvservice.repositories.impl.LegalPersonRequestRepositoryImpl;
@@ -46,7 +46,7 @@ public class RequestsRepositoriesUnitTest {
 
 
     @Test
-    void saveNaturalPersonRequestTest() throws SmvServerException {
+    void saveNaturalPersonRequestTest() throws SmvServiceException {
         NaturalPersonRequest insertRequest = naturalRequestRepository.save(naturalPersonRequest);
         assertNotNull(insertRequest);
         assertThat(insertRequest.getId()).isNotNull();
@@ -54,7 +54,7 @@ public class RequestsRepositoriesUnitTest {
 
 
     @Test
-    void getNaturalPersonRequestByValidIdTest() throws SmvServerException {
+    void getNaturalPersonRequestByValidIdTest() throws SmvServiceException {
         NaturalPersonRequest insertRequest = naturalRequestRepository.save(naturalPersonRequest);
         NaturalPersonRequest resultRequest = naturalRequestRepository.getById(insertRequest.getId());
         assertNotNull(insertRequest);
@@ -66,13 +66,13 @@ public class RequestsRepositoriesUnitTest {
     @Test
     void getNaturalPersonRequestByInvalidIdTest() {
         UUID id = UUID.randomUUID();
-        assertThrows(SmvServerException.class, () -> naturalRequestRepository.getById(id));
+        assertThrows(SmvServiceException.class, () -> naturalRequestRepository.getById(id));
 
     }
 
 
     @Test
-    void deleteNaturalPersonRequestByValidIdTest() throws SmvServerException {
+    void deleteNaturalPersonRequestByValidIdTest() throws SmvServiceException {
         NaturalPersonRequest insertRequest = naturalRequestRepository.save(naturalPersonRequest);
         int result = naturalRequestRepository.delete(insertRequest.getId());
         assertEquals(1, result);
@@ -81,7 +81,7 @@ public class RequestsRepositoriesUnitTest {
 
 
     @Test
-    void deleteNaturalPersonRequestByInvalidIdTest() throws SmvServerException {
+    void deleteNaturalPersonRequestByInvalidIdTest() throws SmvServiceException {
 
         int result = naturalRequestRepository.delete(UUID.randomUUID());
         assertEquals(0, result);
@@ -90,7 +90,7 @@ public class RequestsRepositoriesUnitTest {
 
 
     @Test
-    void saveLegalPersonRequestTest() throws SmvServerException {
+    void saveLegalPersonRequestTest() throws SmvServiceException {
         LegalPersonRequest insertRequest = legalRequestRepository.save(legalPersonRequest);
         assertNotNull(insertRequest);
         assertThat(insertRequest.getId()).isNotNull();
@@ -98,7 +98,7 @@ public class RequestsRepositoriesUnitTest {
 
 
     @Test
-    void getLegalPersonRequestByValidIdTest() throws SmvServerException {
+    void getLegalPersonRequestByValidIdTest() throws SmvServiceException {
         LegalPersonRequest insertRequest = legalRequestRepository.save(legalPersonRequest);
         LegalPersonRequest resultRequest = legalRequestRepository.getById(insertRequest.getId());
         assertNotNull(insertRequest);
@@ -110,13 +110,13 @@ public class RequestsRepositoriesUnitTest {
     @Test
     void getLegalPersonRequestByInvalidIdTest() {
         UUID id = UUID.randomUUID();
-        assertThrows(SmvServerException.class, () -> legalRequestRepository.getById(id));
+        assertThrows(SmvServiceException.class, () -> legalRequestRepository.getById(id));
 
     }
 
 
     @Test
-    void deleteLegalPersonRequestByValidIdTest() throws SmvServerException {
+    void deleteLegalPersonRequestByValidIdTest() throws SmvServiceException {
         LegalPersonRequest insertRequest = legalRequestRepository.save(legalPersonRequest);
         int result = legalRequestRepository.delete(insertRequest.getId());
         assertEquals(1, result);
@@ -125,7 +125,7 @@ public class RequestsRepositoriesUnitTest {
 
 
     @Test
-    void deleteLegalPersonRequestByInvalidIdTest() throws SmvServerException {
+    void deleteLegalPersonRequestByInvalidIdTest() throws SmvServiceException {
 
         int result = legalRequestRepository.delete(UUID.randomUUID());
         assertEquals(0, result);

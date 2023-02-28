@@ -1,7 +1,7 @@
 package by.tsuprikova.smvservice.advice;
 
 
-import by.tsuprikova.smvservice.exceptions.SmvServerException;
+import by.tsuprikova.smvservice.exceptions.SmvServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +30,8 @@ public class ApplicationExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(SmvServerException.class)
-    public ResponseEntity<String> handleDataAccessException(SmvServerException e) {
+    @ExceptionHandler(SmvServiceException.class)
+    public ResponseEntity<String> handleDataAccessException(SmvServiceException e) {
         log.error(e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }

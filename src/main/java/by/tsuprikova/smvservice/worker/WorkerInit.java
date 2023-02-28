@@ -16,12 +16,12 @@ import java.util.concurrent.Executors;
 public class WorkerInit {
 
     private final Worker worker;
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
 
     @PostConstruct
     public void start() {
-        log.info("Worker is starting --------------------------");
+        log.info("Worker started--------------------------");
         executor.execute(worker);
 
     }
@@ -30,7 +30,7 @@ public class WorkerInit {
     @PreDestroy
     public void finish() {
         executor.shutdown();
-        log.info("Worker closed --------------------------");
+        log.info("Worker closed--------------------------");
     }
 
 }

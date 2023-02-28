@@ -1,7 +1,7 @@
 package by.tsuprikova.smvservice.service.impl;
 
 
-import by.tsuprikova.smvservice.exceptions.SmvServerException;
+import by.tsuprikova.smvservice.exceptions.SmvServiceException;
 import by.tsuprikova.smvservice.model.NaturalPersonRequest;
 import by.tsuprikova.smvservice.repositories.NaturalPersonRequestRepository;
 import by.tsuprikova.smvservice.service.NaturalPersonRequestService;
@@ -27,7 +27,7 @@ public class NaturalPersonRequestServiceImpl implements NaturalPersonRequestServ
             NaturalPersonRequest savedRequest = naturalPersonRequestRepository.save(naturalPersonRequest);
             log.info("the natural person request was successfully saved with sts '{}', id={} ", savedRequest.getSts(), savedRequest.getId());
             responseEntity = new ResponseEntity<>(savedRequest, HttpStatus.ACCEPTED);
-        } catch (SmvServerException e) {
+        } catch (SmvServiceException e) {
             log.error(e.getMessage());
             responseEntity = new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

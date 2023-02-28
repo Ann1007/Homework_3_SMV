@@ -1,6 +1,6 @@
 package by.tsuprikova.smvservice.repositories.impl;
 
-import by.tsuprikova.smvservice.exceptions.SmvServerException;
+import by.tsuprikova.smvservice.exceptions.SmvServiceException;
 import by.tsuprikova.smvservice.model.NaturalPersonRequest;
 import by.tsuprikova.smvservice.repositories.NaturalPersonRequestRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.UUID;
 public class NaturalPersonRequestRepositoryImpl implements NaturalPersonRequestRepository {
 
     private final String INSERT_REQUEST = "INSERT INTO natural_person_request (id,sts) VALUES (?,?)";
-    private final String SELECT_FIRST_ID = "SELECT id FROM natural_person_request LIMIT 1";
+    private final String SELECT_RANDOM_ID = "SELECT id FROM natural_person_request LIMIT 1";
     private final String SELECT_REQUEST_BY_ID = "SELECT id,sts FROM natural_person_request WHERE id=?";
     private final String DELETE_REQUEST_BY_ID = "DELETE FROM natural_person_request WHERE id=?";
 
@@ -24,21 +24,21 @@ public class NaturalPersonRequestRepositoryImpl implements NaturalPersonRequestR
 
 
     @Override
-    public UUID findFirstId() throws SmvServerException {
+    public UUID findRandomId() throws SmvServiceException {
         UUID id = null;
         try {
-            id = jdbcTemplate.queryForObject(SELECT_FIRST_ID, UUID.class);
+            id = jdbcTemplate.queryForObject(SELECT_RANDOM_ID, UUID.class);
         } catch (EmptyResultDataAccessException e) {
             return null;
         } catch (DataAccessException e) {
-            throw new SmvServerException(e.getMessage());
+            throw new SmvServiceException(e.getMessage());
         }
         return id;
     }
 
 
     @Override
-    public NaturalPersonRequest save(NaturalPersonRequest naturalPersonRequest) throws SmvServerException {
+    public NaturalPersonRequest save(NaturalPersonRequest naturalPersonRequest) throws SmvServiceException {
         NaturalPersonRequest insertRequest;
         try {
             UUID id = UUID.randomUUID();
@@ -47,7 +47,7 @@ public class NaturalPersonRequestRepositoryImpl implements NaturalPersonRequestR
             insertRequest = getById(id);
 
         } catch (DataAccessException e) {
-            throw new SmvServerException(e.getMessage());
+            throw new SmvServiceException(e.getMessage());
         }
 
         return insertRequest;
@@ -56,7 +56,7 @@ public class NaturalPersonRequestRepositoryImpl implements NaturalPersonRequestR
 
 
     @Override
-    public NaturalPersonRequest getById(UUID id) throws SmvServerException {
+    public NaturalPersonRequest getById(UUID id) throws SmvServiceException {
         NaturalPersonRequest request;
         try {
             request = jdbcTemplate.queryForObject(SELECT_REQUEST_BY_ID, new Object[]{id},
@@ -67,20 +67,20 @@ public class NaturalPersonRequestRepositoryImpl implements NaturalPersonRequestR
                             )
             );
         } catch (DataAccessException e) {
-            throw new SmvServerException(e.getMessage());
+            throw new SmvServiceException(e.getMessage());
         }
         return request;
     }
 
 
     @Override
-    public int delete(UUID id) throws SmvServerException {
+    public int delete(UUID id) throws SmvServiceException {
 
         int kol = 0;
         try {
             kol = jdbcTemplate.update(DELETE_REQUEST_BY_ID, id);
         } catch (DataAccessException e) {
-            throw new SmvServerException(e.getMessage());
+            throw new SmvServiceException(e.getMessage());
         }
         return kol;
 

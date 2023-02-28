@@ -1,6 +1,6 @@
 package by.tsuprikova.smvservice.repositories.impl;
 
-import by.tsuprikova.smvservice.exceptions.SmvServerException;
+import by.tsuprikova.smvservice.exceptions.SmvServiceException;
 import by.tsuprikova.smvservice.model.InfoOfFineNaturalPerson;
 import by.tsuprikova.smvservice.repositories.NaturalPersonInfoRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class NaturalPersonInfoRepositoryImpl implements NaturalPersonInfoReposit
 
 
     @Override
-    public InfoOfFineNaturalPerson findBySts(String sts) throws SmvServerException {
+    public InfoOfFineNaturalPerson findBySts(String sts) throws SmvServiceException {
         InfoOfFineNaturalPerson info = null;
         try {
 
@@ -41,7 +41,7 @@ public class NaturalPersonInfoRepositoryImpl implements NaturalPersonInfoReposit
             return null;
 
         } catch (DataAccessException e) {
-            throw new SmvServerException(e.getMessage());
+            throw new SmvServiceException(e.getMessage());
         }
         return info;
     }

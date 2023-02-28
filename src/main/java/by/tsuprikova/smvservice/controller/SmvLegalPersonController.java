@@ -2,7 +2,6 @@ package by.tsuprikova.smvservice.controller;
 
 import by.tsuprikova.smvservice.model.LegalPersonRequest;
 import by.tsuprikova.smvservice.model.LegalPersonResponse;
-import by.tsuprikova.smvservice.model.NaturalPersonRequest;
 import by.tsuprikova.smvservice.model.NaturalPersonResponse;
 import by.tsuprikova.smvservice.service.LegalPersonRequestService;
 import by.tsuprikova.smvservice.service.LegalPersonResponseService;
@@ -54,6 +53,7 @@ public class SmvLegalPersonController {
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
             @ApiResponse(responseCode = "404", description = "The response is not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "The problem with DB", content = @Content)})
+
     @PostMapping("/response")
     public ResponseEntity<LegalPersonResponse> getResponse(@Valid @RequestBody LegalPersonRequest legalPersonRequest) {
 
@@ -67,6 +67,7 @@ public class SmvLegalPersonController {
             @ApiResponse(responseCode = "200", description = "The response was successfully deleted"),
             @ApiResponse(responseCode = "405", description = "The response wasn't deleted by this id", content = @Content),
             @ApiResponse(responseCode = "500", description = "The problem with DB", content = @Content)})
+
     @DeleteMapping("/response/{id}")
     public ResponseEntity<Void> deleteResponse(@PathVariable UUID id) {
 

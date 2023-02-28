@@ -1,9 +1,8 @@
 package by.tsuprikova.smvservice.repositories.impl;
 
-import by.tsuprikova.smvservice.exceptions.SmvServerException;
+import by.tsuprikova.smvservice.exceptions.SmvServiceException;
 import by.tsuprikova.smvservice.model.NaturalPersonResponse;
 import by.tsuprikova.smvservice.repositories.NaturalPersonResponseRepository;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -28,7 +27,7 @@ public class NaturalPersonResponseRepositoryImpl implements NaturalPersonRespons
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public NaturalPersonResponse findBySts(String sts) throws SmvServerException {
+    public NaturalPersonResponse findBySts(String sts) throws SmvServiceException {
 
         NaturalPersonResponse response = null;
         try {
@@ -47,31 +46,31 @@ public class NaturalPersonResponseRepositoryImpl implements NaturalPersonRespons
         } catch (EmptyResultDataAccessException e) {
             return null;
         } catch (DataAccessException e) {
-            throw new SmvServerException(e.getMessage());
+            throw new SmvServiceException(e.getMessage());
         }
         return response;
     }
 
     @Override
-    public void save(NaturalPersonResponse response) throws SmvServerException {
+    public void save(NaturalPersonResponse response) throws SmvServiceException {
         try {
             response.setId(UUID.randomUUID());
             jdbcTemplate.update(INSERT_RESPONSE, response.getId(), response.getAmountOfAccrual(), response.getAmountOfPaid(),
                     response.getArticleOfKoap(), response.getDateOfResolution(), response.getNumberOfResolution(), response.getSts());
 
         } catch (DataAccessException e) {
-            throw new SmvServerException(e.getMessage());
+            throw new SmvServiceException(e.getMessage());
         }
     }
 
     @Override
-    public int deleteById(UUID id) throws SmvServerException {
+    public int deleteById(UUID id) throws SmvServiceException {
 
         int kol = 0;
         try {
             kol = jdbcTemplate.update(DELETE_RESPONSE_BY_ID, id);
         } catch (DataAccessException e) {
-            throw new SmvServerException(e.getMessage());
+            throw new SmvServiceException(e.getMessage());
         }
         return kol;
     }
