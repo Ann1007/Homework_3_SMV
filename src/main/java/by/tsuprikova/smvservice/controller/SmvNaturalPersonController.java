@@ -7,6 +7,7 @@ import by.tsuprikova.smvservice.service.NaturalPersonResponseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,12 +35,14 @@ public class SmvNaturalPersonController {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = NaturalPersonRequest.class))}),
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
-            @ApiResponse(responseCode = "500", description = "The problem with DB", content = @Content)})
+            @ApiResponse(responseCode = "500", description = "The problem with server", content = @Content)})
 
     @PostMapping("/request")
-    public ResponseEntity<NaturalPersonRequest> saveRequest(@Valid @RequestBody NaturalPersonRequest naturalPersonRequest) {
+    public ResponseEntity<NaturalPersonRequest> saveRequest(@RequestBody(description = "natural person request", required = true,
+            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = NaturalPersonRequest.class))})
+                                                            @Valid @org.springframework.web.bind.annotation.RequestBody NaturalPersonRequest request) {
 
-        return naturalPersonRequestService.saveRequestForFine(naturalPersonRequest);
+        return naturalPersonRequestService.saveRequestForFine(request);
 
     }
 
@@ -51,12 +54,14 @@ public class SmvNaturalPersonController {
                             schema = @Schema(implementation = NaturalPersonResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
             @ApiResponse(responseCode = "404", description = "The response is not found", content = @Content),
-            @ApiResponse(responseCode = "500", description = "The problem with DB", content = @Content)})
+            @ApiResponse(responseCode = "500", description = "The problem with server", content = @Content)})
 
     @PostMapping("/response")
-    public ResponseEntity<NaturalPersonResponse> getResponse(@Valid @RequestBody NaturalPersonRequest naturalPersonRequest) {
+    public ResponseEntity<NaturalPersonResponse> getResponse(@RequestBody(description = "natural person request", required = true,
+            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = NaturalPersonRequest.class))})
+                                                             @Valid @org.springframework.web.bind.annotation.RequestBody NaturalPersonRequest request) {
 
-        return naturalPersonResponseService.getResponseForFine(naturalPersonRequest.getSts());
+        return naturalPersonResponseService.getResponseForFine(request.getSts());
 
 
     }
@@ -66,7 +71,7 @@ public class SmvNaturalPersonController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The response was successfully deleted"),
             @ApiResponse(responseCode = "405", description = "The response wasn't deleted by this id", content = @Content),
-            @ApiResponse(responseCode = "500", description = "The problem with DB", content = @Content)})
+            @ApiResponse(responseCode = "500", description = "The problem with server", content = @Content)})
 
     @DeleteMapping("/response/{id}")
     public ResponseEntity<Void> deleteResponse(@PathVariable UUID id) {

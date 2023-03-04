@@ -8,6 +8,7 @@ import by.tsuprikova.smvservice.service.LegalPersonResponseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,12 +36,14 @@ public class SmvLegalPersonController {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = LegalPersonRequest.class))}),
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
-            @ApiResponse(responseCode = "500", description = "The problem with DB", content = @Content)})
+            @ApiResponse(responseCode = "500", description = "The problem with server", content = @Content)})
 
     @PostMapping("/request")
-    public ResponseEntity<LegalPersonRequest> saveRequest(@Valid @RequestBody LegalPersonRequest legalPersonRequest) {
+    public ResponseEntity<LegalPersonRequest> saveRequest(@RequestBody(description = "legal person request", required = true,
+            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = LegalPersonRequest.class))})
+                                                          @Valid @org.springframework.web.bind.annotation.RequestBody LegalPersonRequest request) {
 
-        return legalPersonRequestService.saveRequestForFine(legalPersonRequest);
+        return legalPersonRequestService.saveRequestForFine(request);
 
     }
 
@@ -49,15 +52,17 @@ public class SmvLegalPersonController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The response is found",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = NaturalPersonResponse.class))}),
+                            schema = @Schema(implementation = LegalPersonResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
             @ApiResponse(responseCode = "404", description = "The response is not found", content = @Content),
-            @ApiResponse(responseCode = "500", description = "The problem with DB", content = @Content)})
+            @ApiResponse(responseCode = "500", description = "The problem with server", content = @Content)})
 
     @PostMapping("/response")
-    public ResponseEntity<LegalPersonResponse> getResponse(@Valid @RequestBody LegalPersonRequest legalPersonRequest) {
+    public ResponseEntity<LegalPersonResponse> getResponse(@RequestBody(description = "legal person request", required = true,
+            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = LegalPersonRequest.class))})
+                                                           @Valid @org.springframework.web.bind.annotation.RequestBody LegalPersonRequest request) {
 
-        return naturalPersonResponseService.getResponseByINN(legalPersonRequest.getInn());
+        return naturalPersonResponseService.getResponseByINN(request.getInn());
 
     }
 
@@ -65,8 +70,8 @@ public class SmvLegalPersonController {
     @Operation(summary = "delete response by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The response was successfully deleted"),
-            @ApiResponse(responseCode = "405", description = "The response wasn't deleted by this id", content = @Content),
-            @ApiResponse(responseCode = "500", description = "The problem with DB", content = @Content)})
+            @ApiResponse(responseCode = "405", description = "The response wasn't deleted by this id"),
+            @ApiResponse(responseCode = "500", description = "The problem with server")})
 
     @DeleteMapping("/response/{id}")
     public ResponseEntity<Void> deleteResponse(@PathVariable UUID id) {
