@@ -9,6 +9,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -16,24 +18,29 @@ import java.util.UUID;
 public class NaturalPersonRequestRepositoryImpl implements NaturalPersonRequestRepository {
 
     private final String INSERT_REQUEST = "INSERT INTO natural_person_request (id,sts) VALUES (?,?)";
-    private final String SELECT_RANDOM_ID = "SELECT id FROM natural_person_request LIMIT 1";
     private final String SELECT_REQUEST_BY_ID = "SELECT id,sts FROM natural_person_request WHERE id=?";
     private final String DELETE_REQUEST_BY_ID = "DELETE FROM natural_person_request WHERE id=?";
+    private final String SELECT_ALL_REQUESTS = "SELECT * FROM natural_person_request";
 
     private final JdbcTemplate jdbcTemplate;
 
 
     @Override
-    public UUID findRandomId() throws SmvServiceException {
-        UUID id = null;
+    public List<NaturalPersonRequest> getAllRequests() throws SmvServiceException {
+        List<NaturalPersonRequest> requestsList = new ArrayList<>();
         try {
-            id = jdbcTemplate.queryForObject(SELECT_RANDOM_ID, UUID.class);
+            requestsList = jdbcTemplate.query(SELECT_ALL_REQUESTS, (rs, rowNum) ->
+                    new NaturalPersonRequest(
+                            rs.getObject("id", java.util.UUID.class),
+                            rs.getString("sts")
+                    ));
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            return requestsList;
         } catch (DataAccessException e) {
             throw new SmvServiceException(e.getMessage());
         }
-        return id;
+
+        return requestsList;
     }
 
 
@@ -85,4 +92,6 @@ public class NaturalPersonRequestRepositoryImpl implements NaturalPersonRequestR
         return kol;
 
     }
+
+
 }

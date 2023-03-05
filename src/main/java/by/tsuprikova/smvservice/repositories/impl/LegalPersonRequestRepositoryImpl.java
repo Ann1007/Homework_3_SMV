@@ -2,6 +2,7 @@ package by.tsuprikova.smvservice.repositories.impl;
 
 import by.tsuprikova.smvservice.exceptions.SmvServiceException;
 import by.tsuprikova.smvservice.model.LegalPersonRequest;
+import by.tsuprikova.smvservice.model.NaturalPersonRequest;
 import by.tsuprikova.smvservice.repositories.LegalPersonRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -9,6 +10,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -16,24 +19,29 @@ import java.util.UUID;
 public class LegalPersonRequestRepositoryImpl implements LegalPersonRequestRepository {
 
     private final String INSERT_REQUEST = "INSERT INTO legal_person_request (id,inn) VALUES (?,?)";
-    private final String SELECT_RANDOM_ID = "SELECT id FROM legal_person_request LIMIT 1";
     private final String SELECT_REQUEST_BY_ID = "SELECT id,inn FROM legal_person_request WHERE id=?";
     private final String DELETE_REQUEST_BY_ID = "DELETE FROM legal_person_request WHERE id=?";
+    private final String SELECT_ALL_REQUESTS = "SELECT * FROM legal_person_request";
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Override
-    public UUID findRandomId() throws SmvServiceException {
-        UUID id;
-        try {
-            id = jdbcTemplate.queryForObject(SELECT_RANDOM_ID, UUID.class);
 
+    @Override
+    public List<LegalPersonRequest> getAllRequests() throws SmvServiceException {
+        List<LegalPersonRequest> requestsList = new ArrayList<>();
+        try {
+            requestsList = jdbcTemplate.query(SELECT_ALL_REQUESTS, (rs, rowNum) ->
+                    new LegalPersonRequest(
+                            rs.getObject("id", java.util.UUID.class),
+                            rs.getLong("inn")
+                    ));
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            return requestsList;
         } catch (DataAccessException e) {
             throw new SmvServiceException(e.getMessage());
         }
-        return id;
+
+        return requestsList;
     }
 
 
@@ -83,4 +91,6 @@ public class LegalPersonRequestRepositoryImpl implements LegalPersonRequestRepos
         return kol;
 
     }
+
+
 }
