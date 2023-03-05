@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -61,7 +60,7 @@ public class ForNaturalPersonIntegrationTest {
 
 
     @Test
-    void SaveValidNaturalPersonRequestTest() throws Exception {
+    void saveValidNaturalPersonRequestTest() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/natural_person/request").
                         contentType(MediaType.APPLICATION_JSON).
@@ -69,13 +68,11 @@ public class ForNaturalPersonIntegrationTest {
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.ACCEPTED.value())).
                 andExpect(MockMvcResultMatchers.jsonPath("$.sts").value(naturalPersonRequest.getSts())).
                 andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
-
-
     }
 
 
     @Test
-    void SaveInValidNaturalPersonRequestTest() throws Exception {
+    void saveInValidNaturalPersonRequestTest() throws Exception {
 
         NaturalPersonRequest invalidRequest = new NaturalPersonRequest();
         invalidRequest.setSts("");
@@ -84,9 +81,7 @@ public class ForNaturalPersonIntegrationTest {
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(invalidRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value())).
-                andExpect(MockMvcResultMatchers.jsonPath("$.sts").value("the sts field cannot be empty")).
-                andExpect(mvcResult -> mvcResult.getResolvedException().getClass().equals(MethodArgumentNotValidException.class));
-
+                andExpect(MockMvcResultMatchers.jsonPath("$.sts").value("the sts field cannot be empty"));
     }
 
 
@@ -113,7 +108,6 @@ public class ForNaturalPersonIntegrationTest {
         Assertions.assertEquals(new BigDecimal(28), resultResponseWithFine.getAmountOfPaid());
         Assertions.assertEquals("21.3", resultResponseWithFine.getArticleOfKoap());
 
-
     }
 
 
@@ -131,7 +125,6 @@ public class ForNaturalPersonIntegrationTest {
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.NOT_FOUND.value()));
 
         Assertions.assertNull(response);
-
     }
 
 

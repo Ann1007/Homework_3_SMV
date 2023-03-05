@@ -20,8 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -59,7 +57,7 @@ public class ForLegalPersonIntegrationTest {
 
 
     @Test
-    void SaveValidLegalPersonRequestTest() throws Exception {
+    void saveValidLegalPersonRequestTest() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/legal_person/request").
                         contentType(MediaType.APPLICATION_JSON).
@@ -81,8 +79,8 @@ public class ForLegalPersonIntegrationTest {
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(invalidRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value())).
-                andExpect(MockMvcResultMatchers.jsonPath("$.inn").value("the inn field must consist of at least 10 digits")).
-                andExpect(mvcResult -> mvcResult.getResolvedException().getClass().equals(MethodArgumentNotValidException.class));
+                andExpect(MockMvcResultMatchers.jsonPath("$.inn").value("the inn field must consist of at least 10 digits"));
+
 
     }
 

@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -79,6 +80,13 @@ public class RequestsRepositoriesUnitTest {
 
     }
 
+    @Test
+    void getListOfNaturalPersonRequestTest() throws SmvServiceException {
+        naturalRequestRepository.save(naturalPersonRequest);
+        List<NaturalPersonRequest> list = naturalRequestRepository.getAllRequests();
+        assertThat(list.size()).isNotZero();
+    }
+
 
     @Test
     void deleteNaturalPersonRequestByInvalidIdTest() throws SmvServiceException {
@@ -94,6 +102,13 @@ public class RequestsRepositoriesUnitTest {
         LegalPersonRequest insertRequest = legalRequestRepository.save(legalPersonRequest);
         assertNotNull(insertRequest);
         assertThat(insertRequest.getId()).isNotNull();
+    }
+
+    @Test
+    void getListOfLegalPersonRequestTest() throws SmvServiceException {
+        legalRequestRepository.save(legalPersonRequest);
+        List<LegalPersonRequest> list = legalRequestRepository.getAllRequests();
+        assertThat(list.size()).isNotZero();
     }
 
 

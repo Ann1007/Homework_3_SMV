@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -80,7 +79,7 @@ public class NaturalPersonControllerUnitTest {
 
 
     @Test
-    void SaveValidNaturalPersonRequestTest() throws Exception {
+    void saveValidNaturalPersonRequestTest() throws Exception {
 
         Mockito.doReturn(naturalPersonRequest).when(requestRepository).save(any(NaturalPersonRequest.class));
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/natural_person/request").
@@ -94,7 +93,7 @@ public class NaturalPersonControllerUnitTest {
 
 
     @Test
-    void SaveInvalidNaturalPersonRequestTest() throws Exception {
+    void saveInvalidNaturalPersonRequestTest() throws Exception {
 
         NaturalPersonRequest invalidRequest = new NaturalPersonRequest();
         invalidRequest.setSts("");
@@ -103,8 +102,8 @@ public class NaturalPersonControllerUnitTest {
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(invalidRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value())).
-                andExpect(MockMvcResultMatchers.jsonPath("$.sts").value("the sts field cannot be empty")).
-                andExpect(mvcResult -> mvcResult.getResolvedException().getClass().equals(MethodArgumentNotValidException.class));
+                andExpect(MockMvcResultMatchers.jsonPath("$.sts").value("the sts field cannot be empty"));
+
     }
 
 

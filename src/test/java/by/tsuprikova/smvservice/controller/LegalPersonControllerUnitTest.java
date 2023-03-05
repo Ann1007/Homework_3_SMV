@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -59,7 +58,7 @@ public class LegalPersonControllerUnitTest {
     private LegalPersonRequest request;
     private LegalPersonResponse response;
 
-   @BeforeEach
+    @BeforeEach
     void init() {
 
         Long inn = 1234567890L;
@@ -106,9 +105,7 @@ public class LegalPersonControllerUnitTest {
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(invalidRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value())).
-                andExpect(MockMvcResultMatchers.jsonPath("$.inn").value("the inn field must consist of at least 10 digits")).
-                andExpect(mvcResult -> mvcResult.getResolvedException().getClass().equals(MethodArgumentNotValidException.class));
-
+                andExpect(MockMvcResultMatchers.jsonPath("$.inn").value("the inn field must consist of at least 10 digits"));
     }
 
 
@@ -159,6 +156,7 @@ public class LegalPersonControllerUnitTest {
         Mockito.verify(responseRepository, Mockito.times(1)).deleteById(id);
 
     }
+
 
     @Test
     void deleteResponseWithFineByInValidId() throws Exception {
