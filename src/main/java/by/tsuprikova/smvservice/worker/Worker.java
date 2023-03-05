@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.UUID;
+import java.util.List;
 
 
 @Component
@@ -30,25 +30,29 @@ public class Worker implements Runnable {
         //log.info("Worker is working....");
         while (true) {
             try {
-                UUID naturalPersonRequestId = naturalPersonRequestRepository.findRandomId();
-                UUID legalPersonRequestId = legalPersonRequestRepository.findRandomId();
+                List<NaturalPersonRequest> naturalPersonRequestList = naturalPersonRequestRepository.getAllRequests();
+                List<LegalPersonRequest> legalPersonRequestList = legalPersonRequestRepository.getAllRequests();
 
-                while (naturalPersonRequestId == null && legalPersonRequestId == null) {
+                while (naturalPersonRequestList.size() == 0 && legalPersonRequestList.size() == 0) {
                     try {
                         Thread.sleep(300);
-                        naturalPersonRequestId = naturalPersonRequestRepository.findRandomId();
-                        legalPersonRequestId = legalPersonRequestRepository.findRandomId();
+                        naturalPersonRequestList = naturalPersonRequestRepository.getAllRequests();
+                        legalPersonRequestList = legalPersonRequestRepository.getAllRequests();
 
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
 
-                if (naturalPersonRequestId != null) {
-                    workWithNaturalPersonRepositories(naturalPersonRequestId);
+                if (naturalPersonRequestList.size() != 0) {
+                    for (NaturalPersonRequest request : naturalPersonRequestList) {
+                        workWithNaturalPersonRepositories(request);
+                    }
                 }
-                if (legalPersonRequestId != null) {
-                    workWithLegalPersonRepositories(legalPersonRequestId);
+                if (legalPersonRequestList.size() != 0) {
+                    for (LegalPersonRequest request : legalPersonRequestList) {
+                        workWithLegalPersonRepositories(request);
+                    }
                 }
 
             } catch (SmvServiceException e) {
@@ -60,9 +64,9 @@ public class Worker implements Runnable {
     }
 
 
-    private void workWithNaturalPersonRepositories(UUID id) {
+    private void workWithNaturalPersonRepositories(NaturalPersonRequest naturalPersonRequest) {
         try {
-            NaturalPersonRequest naturalPersonRequest = naturalPersonRequestRepository.getById(id);
+
             String sts = naturalPersonRequest.getSts();
 
             InfoOfFineNaturalPerson infoOfFineNaturalPerson = infoRepository.findBySts(sts);
@@ -84,7 +88,7 @@ public class Worker implements Runnable {
                     naturalPersonResponseRepository.save(response);
                 }
             }
-            naturalPersonRequestRepository.delete(id);
+            naturalPersonRequestRepository.delete(naturalPersonRequest.getId());
         } catch (SmvServiceException e) {
             log.error(e.getMessage());
         }
@@ -93,9 +97,9 @@ public class Worker implements Runnable {
     }
 
 
-    private void workWithLegalPersonRepositories(UUID id) {
+    private void workWithLegalPersonRepositories(LegalPersonRequest legalPersonRequest) {
+
         try {
-            LegalPersonRequest legalPersonRequest = legalPersonRequestRepository.getById(id);
             Long INN = legalPersonRequest.getInn();
 
             LegalPersonResponse response = legalPersonResponseRepository.findByINN(INN);
@@ -112,7 +116,7 @@ public class Worker implements Runnable {
 
                 legalPersonResponseRepository.save(response);
             }
-            legalPersonRequestRepository.delete(id);
+            legalPersonRequestRepository.delete(legalPersonRequest.getId());
         } catch (SmvServiceException e) {
             log.error(e.getMessage());
         }
