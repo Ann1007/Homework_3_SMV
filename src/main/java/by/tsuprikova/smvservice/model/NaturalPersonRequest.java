@@ -7,11 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@XmlRootElement(name = "NaturalPersonRequest")
 public class NaturalPersonRequest {
 
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)

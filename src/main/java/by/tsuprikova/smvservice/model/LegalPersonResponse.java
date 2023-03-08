@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
@@ -12,6 +13,7 @@ import java.util.UUID;
 
 @Data
 @RequiredArgsConstructor
+@XmlRootElement(name = "LegalPersonResponse")
 public class LegalPersonResponse extends Response {
 
     @Schema(description = "taxpayer identification number(ИНН - идентификационный номер налогоплательщика)")
