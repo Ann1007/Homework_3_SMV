@@ -6,6 +6,7 @@ import by.tsuprikova.smvservice.model.NaturalPersonResponse;
 import by.tsuprikova.smvservice.repositories.NaturalPersonRequestRepository;
 import by.tsuprikova.smvservice.repositories.NaturalPersonResponseRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Cleanup;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,11 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -77,9 +83,37 @@ public class NaturalPersonControllerUnitTest {
 
     }
 
+    @Test
+    void checkBadNaturalPersonRequestTest() throws Exception {
+
+        NaturalPersonRequest invalidRequest = new NaturalPersonRequest();
+        invalidRequest.setSts("");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/natural_person/request").
+                        contentType(MediaType.APPLICATION_JSON).
+                        content(objectMapper.writeValueAsString(invalidRequest))).
+                andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value())).
+                andExpect(MockMvcResultMatchers.jsonPath("$.sts").value("the sts field cannot be empty"));
+
+        JAXBContext context = JAXBContext.newInstance(NaturalPersonRequest.class);
+        Marshaller mar = context.createMarshaller();
+        mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        @Cleanup StringWriter sw = new StringWriter();
+        mar.marshal(invalidRequest, sw);
+        String xmlRequest = sw.toString();
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/natural_person/request").
+                        contentType(MediaType.APPLICATION_XML_VALUE).
+                        accept(MediaType.APPLICATION_XML_VALUE).
+                        content(xmlRequest)).
+                andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value())).
+                andExpect(MockMvcResultMatchers.xpath("//sts/text()").string("the sts field cannot be empty"));
+
+    }
+
 
     @Test
-    void saveValidNaturalPersonRequestTest() throws Exception {
+    void saveValidJsonRequestTest() throws Exception {
 
         Mockito.doReturn(naturalPersonRequest).when(requestRepository).save(any(NaturalPersonRequest.class));
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/natural_person/request").
@@ -91,24 +125,30 @@ public class NaturalPersonControllerUnitTest {
 
     }
 
-
     @Test
-    void saveInvalidNaturalPersonRequestTest() throws Exception {
+    void saveValidXmlRequestTest() throws Exception {
 
-        NaturalPersonRequest invalidRequest = new NaturalPersonRequest();
-        invalidRequest.setSts("");
+        Mockito.doReturn(naturalPersonRequest).when(requestRepository).save(any(NaturalPersonRequest.class));
+        JAXBContext context = JAXBContext.newInstance(NaturalPersonRequest.class);
+        Marshaller mar = context.createMarshaller();
+        mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        @Cleanup StringWriter sw = new StringWriter();
+        mar.marshal(naturalPersonRequest, sw);
+        String xmlRequest = sw.toString();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/natural_person/request").
-                        contentType(MediaType.APPLICATION_JSON).
-                        content(objectMapper.writeValueAsString(invalidRequest))).
-                andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value())).
-                andExpect(MockMvcResultMatchers.jsonPath("$.sts").value("the sts field cannot be empty"));
+                        contentType(MediaType.APPLICATION_XML_VALUE).
+                        accept(MediaType.APPLICATION_XML_VALUE).
+                        content(xmlRequest)).
+                andExpect(MockMvcResultMatchers.status().is(HttpStatus.ACCEPTED.value())).
+                andExpect(MockMvcResultMatchers.xpath("//sts/text()").string(naturalPersonRequest.getSts())).
+                andExpect(MockMvcResultMatchers.xpath("//id/text()").exists());
 
     }
 
 
     @Test
-    void getResponseWithFineByStsNotNull() throws Exception {
+    void getNotNullJsonResponseByValidJsonRequestTest() throws Exception {
 
         Mockito.when(responseRepository.findBySts(any(String.class))).thenReturn(response);
 
@@ -133,7 +173,42 @@ public class NaturalPersonControllerUnitTest {
 
 
     @Test
-    void getResponseWithFineByStIsNull() throws Exception {
+    void getNotNullXmlResponseByValidXmlRequestTest() throws Exception {
+
+        Mockito.when(responseRepository.findBySts(any(String.class))).thenReturn(response);
+
+        JAXBContext context = JAXBContext.newInstance(NaturalPersonRequest.class);
+        Marshaller mar = context.createMarshaller();
+        mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        @Cleanup StringWriter sw = new StringWriter();
+        mar.marshal(naturalPersonRequest, sw);
+        String xmlRequest = sw.toString();
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/natural_person/response").
+                        contentType(MediaType.APPLICATION_XML_VALUE).
+                        accept(MediaType.APPLICATION_XML_VALUE).
+                        content(xmlRequest)).
+                andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value())).
+                andReturn();
+
+        String resultContext = result.getResponse().getContentAsString();
+        JAXBContext jaxbContext = JAXBContext.newInstance(NaturalPersonResponse.class);
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        @Cleanup StringReader stringReader = new StringReader(resultContext);
+        NaturalPersonResponse resultResponseWithFine = (NaturalPersonResponse) unmarshaller.unmarshal(stringReader);
+
+        Assertions.assertNotNull(resultResponseWithFine);
+        Assertions.assertEquals("59 ут 123456", resultResponseWithFine.getSts());
+        Assertions.assertEquals(new BigDecimal(28), resultResponseWithFine.getAmountOfAccrual());
+        Assertions.assertEquals(321521, resultResponseWithFine.getNumberOfResolution());
+        Assertions.assertEquals(new BigDecimal(28), resultResponseWithFine.getAmountOfPaid());
+        Assertions.assertEquals("21.3", resultResponseWithFine.getArticleOfKoap());
+
+    }
+
+
+    @Test
+    void getNullResponseTest() throws Exception {
 
         Mockito.when(responseRepository.findBySts(any(String.class))).thenReturn(null);
 
@@ -142,11 +217,23 @@ public class NaturalPersonControllerUnitTest {
                         content(objectMapper.writeValueAsString(naturalPersonRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.NOT_FOUND.value()));
 
+        JAXBContext context = JAXBContext.newInstance(NaturalPersonRequest.class);
+        Marshaller mar = context.createMarshaller();
+        mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        @Cleanup StringWriter sw = new StringWriter();
+        mar.marshal(naturalPersonRequest, sw);
+        String xmlRequest = sw.toString();
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/natural_person/response").
+                        contentType(MediaType.APPLICATION_XML_VALUE).
+                        content(xmlRequest)).
+                andExpect(MockMvcResultMatchers.status().is(HttpStatus.NOT_FOUND.value()));
+
     }
 
 
     @Test
-    void deleteResponseWithFineByValidId() throws Exception {
+    void deleteResponseByValidId() throws Exception {
 
         int kol = 1;
         UUID id = UUID.randomUUID();
@@ -161,7 +248,7 @@ public class NaturalPersonControllerUnitTest {
 
 
     @Test
-    void deleteResponseWithFineByInvalidId() throws Exception {
+    void deleteResponseByInvalidId() throws Exception {
 
         int kol = 0;
         UUID id = UUID.randomUUID();

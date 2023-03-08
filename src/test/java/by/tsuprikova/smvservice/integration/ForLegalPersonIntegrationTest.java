@@ -6,6 +6,7 @@ import by.tsuprikova.smvservice.model.Response;
 import by.tsuprikova.smvservice.repositories.LegalPersonRequestRepository;
 import by.tsuprikova.smvservice.repositories.LegalPersonResponseRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Cleanup;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,9 +21,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -57,7 +65,7 @@ public class ForLegalPersonIntegrationTest {
 
 
     @Test
-    void saveValidLegalPersonRequestTest() throws Exception {
+    void saveValidJsonLegalPersonRequestTest() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/legal_person/request").
                         contentType(MediaType.APPLICATION_JSON).
@@ -68,25 +76,30 @@ public class ForLegalPersonIntegrationTest {
 
     }
 
-
     @Test
-    void saveInvalidLegalPersonRequestTest() throws Exception {
-
-        LegalPersonRequest invalidRequest = new LegalPersonRequest();
-        invalidRequest.setInn(544L);
+    void saveValidXmlRequestTest() throws Exception {
+        JAXBContext context = JAXBContext.newInstance(LegalPersonRequest.class);
+        Marshaller mar = context.createMarshaller();
+        mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        @Cleanup StringWriter sw = new StringWriter();
+        mar.marshal(legalPersonRequest, sw);
+        String xmlRequest = sw.toString();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/legal_person/request").
-                        contentType(MediaType.APPLICATION_JSON).
-                        content(objectMapper.writeValueAsString(invalidRequest))).
-                andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value())).
-                andExpect(MockMvcResultMatchers.jsonPath("$.inn").value("the inn field must consist of at least 10 digits"));
-
+                        contentType(MediaType.APPLICATION_XML_VALUE).
+                        accept(MediaType.APPLICATION_XML_VALUE).
+                        content(xmlRequest)).
+                andExpect(MockMvcResultMatchers.status().is(HttpStatus.ACCEPTED.value())).
+                andExpect(MockMvcResultMatchers.xpath("//inn/text()").string(legalPersonRequest.getInn().toString())).
+                andExpect(MockMvcResultMatchers.xpath("//id/text()").exists());
 
     }
 
 
+
+
     @Test
-    void getResponseWithFineByStsNotNull() throws Exception {
+    void getNotNullJsonResponseByValidJsonRequestTest() throws Exception {
         requestRepository.save(legalPersonRequest);
         Thread.sleep(1000);
 
@@ -110,7 +123,35 @@ public class ForLegalPersonIntegrationTest {
 
 
     @Test
-    void getResponseWithFineByStIsNull() throws Exception {
+    void getNotNullXmlResponseByValidXmlRequestTest() throws Exception {
+
+        requestRepository.save(legalPersonRequest);
+        Thread.sleep(1000);
+
+        JAXBContext context = JAXBContext.newInstance(LegalPersonRequest.class);
+        Marshaller mar = context.createMarshaller();
+        mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        @Cleanup StringWriter sw = new StringWriter();
+        mar.marshal(legalPersonRequest, sw);
+        String xmlRequest = sw.toString();
+
+        mockMvc.perform(post("/api/v1/smv/legal_person/response").
+                        contentType(MediaType.APPLICATION_XML_VALUE).
+                        accept(MediaType.APPLICATION_XML_VALUE).
+                        content(xmlRequest)).
+                andExpect(status().is(HttpStatus.OK.value())).
+                andExpect(MockMvcResultMatchers.xpath("//inn/text()").string("4567832109")).
+                andExpect(MockMvcResultMatchers.xpath("//amountOfAccrual/text()").string("44")).
+                andExpect(MockMvcResultMatchers.xpath("//amountOfPaid/text()").string("44")).
+                andExpect(MockMvcResultMatchers.xpath("//numberOfResolution/text()").string("123")).
+                andExpect(MockMvcResultMatchers.xpath("//articleOfKoap/text()").string("21.1"));
+
+
+    }
+
+
+    @Test
+    void getNullResponseTest() throws Exception {
 
         LegalPersonRequest wrongRequest = new LegalPersonRequest();
         wrongRequest.setInn(5445676876L);
@@ -120,11 +161,24 @@ public class ForLegalPersonIntegrationTest {
                         content(objectMapper.writeValueAsString(wrongRequest))).
                 andExpect(MockMvcResultMatchers.status().is(HttpStatus.NOT_FOUND.value()));
 
+        JAXBContext context = JAXBContext.newInstance(LegalPersonRequest.class);
+        Marshaller mar = context.createMarshaller();
+        mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        @Cleanup StringWriter sw = new StringWriter();
+        mar.marshal(wrongRequest, sw);
+        String xmlRequest = sw.toString();
+
+        mockMvc.perform(post("/api/v1/smv/legal_person/response").
+                        contentType(MediaType.APPLICATION_XML_VALUE).
+                        accept(MediaType.APPLICATION_XML_VALUE).
+                        content(xmlRequest)).
+                andExpect(status().is(HttpStatus.NOT_FOUND.value()));
+
     }
 
 
     @Test
-    void deleteResponseWithFineByValidId() throws Exception {
+    void deleteResponseByValidId() throws Exception {
 
         requestRepository.save(legalPersonRequest);
         Thread.sleep(1000);
@@ -138,7 +192,7 @@ public class ForLegalPersonIntegrationTest {
 
 
     @Test
-    void deleteResponseWithFineByInValidId() throws Exception {
+    void deleteResponseByInValidId() throws Exception {
 
         UUID id = UUID.randomUUID();
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/smv/legal_person/response/{id}", id)).

@@ -6,6 +6,7 @@ import by.tsuprikova.smvservice.model.LegalPersonResponse;
 import by.tsuprikova.smvservice.repositories.LegalPersonRequestRepository;
 import by.tsuprikova.smvservice.repositories.LegalPersonResponseRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Cleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,6 +23,11 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -82,7 +88,36 @@ public class LegalPersonControllerUnitTest {
 
 
     @Test
-    void saveValidLegalPersonRequest() throws Exception {
+    void checkBadLegalPersonRequestTest() throws Exception {
+
+        LegalPersonRequest invalidRequest = new LegalPersonRequest();
+        invalidRequest.setInn(544L);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/legal_person/request").
+                        contentType(MediaType.APPLICATION_JSON).
+                        content(objectMapper.writeValueAsString(invalidRequest))).
+                andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value())).
+                andExpect(MockMvcResultMatchers.jsonPath("$.inn").value("the inn field must consist of at least 10 digits"));
+
+        JAXBContext context = JAXBContext.newInstance(LegalPersonRequest.class);
+        Marshaller mar = context.createMarshaller();
+        mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        @Cleanup StringWriter sw = new StringWriter();
+        mar.marshal(invalidRequest, sw);
+        String xmlRequest = sw.toString();
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/legal_person/request").
+                        contentType(MediaType.APPLICATION_XML_VALUE).
+                        accept(MediaType.APPLICATION_XML_VALUE).
+                        content(xmlRequest)).
+                andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value())).
+                andExpect(MockMvcResultMatchers.xpath("//inn/text()").string("the inn field must consist of at least 10 digits"));
+
+    }
+
+
+    @Test
+    void saveValidJsonLegalPersonRequestTest() throws Exception {
 
         Mockito.doReturn(request).when(requestRepository).save(any(LegalPersonRequest.class));
 
@@ -94,24 +129,66 @@ public class LegalPersonControllerUnitTest {
                 andExpect(jsonPath("$.inn").value(request.getInn()));
     }
 
-
     @Test
-    void SaveInValidNaturalPersonRequestTest() throws Exception {
+    void saveValidXmlRequestTest() throws Exception {
 
-        LegalPersonRequest invalidRequest = new LegalPersonRequest();
-        invalidRequest.setInn(544L);
+        Mockito.doReturn(request).when(requestRepository).save(any(LegalPersonRequest.class));
+
+        JAXBContext context = JAXBContext.newInstance(LegalPersonRequest.class);
+        Marshaller mar = context.createMarshaller();
+        mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        @Cleanup StringWriter sw = new StringWriter();
+        mar.marshal(request, sw);
+        String xmlRequest = sw.toString();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/smv/legal_person/request").
-                        contentType(MediaType.APPLICATION_JSON).
-                        content(objectMapper.writeValueAsString(invalidRequest))).
-                andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value())).
-                andExpect(MockMvcResultMatchers.jsonPath("$.inn").value("the inn field must consist of at least 10 digits"));
+                        contentType(MediaType.APPLICATION_XML_VALUE).
+                        accept(MediaType.APPLICATION_XML_VALUE).
+                        content(xmlRequest)).
+                andExpect(MockMvcResultMatchers.status().is(HttpStatus.ACCEPTED.value())).
+                andExpect(MockMvcResultMatchers.xpath("//inn/text()").string(request.getInn().toString())).
+                andExpect(MockMvcResultMatchers.xpath("//id/text()").exists());
+
     }
 
 
     @Test
-    void getResponseWithFineByStsNotNull() throws Exception {
+    void getNotNullXmlResponseByValidXmlRequestTest() throws Exception {
 
+        Mockito.when(responseRepository.findByINN(any(Long.class))).thenReturn(response);
+
+        JAXBContext context = JAXBContext.newInstance(LegalPersonRequest.class);
+        Marshaller mar = context.createMarshaller();
+        mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        @Cleanup StringWriter sw = new StringWriter();
+        mar.marshal(request, sw);
+        String xmlRequest = sw.toString();
+
+        MvcResult result = mockMvc.perform(post("/api/v1/smv/legal_person/response").
+                        contentType(MediaType.APPLICATION_XML_VALUE).
+                        accept(MediaType.APPLICATION_XML_VALUE).
+                        content(xmlRequest)).
+                andExpect(status().is(HttpStatus.OK.value())).
+                andReturn();
+
+        String resultContext = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(LegalPersonResponse.class);
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        @Cleanup StringReader stringReader = new StringReader(resultContext);
+        LegalPersonResponse resultResponseWithFine = (LegalPersonResponse) unmarshaller.unmarshal(stringReader);
+
+        assertNotNull(resultResponseWithFine);
+        assertEquals(1234567890L, resultResponseWithFine.getInn());
+        assertEquals(new BigDecimal(44), resultResponseWithFine.getAmountOfAccrual());
+        assertEquals(1212, resultResponseWithFine.getNumberOfResolution());
+        assertEquals(new BigDecimal(44), resultResponseWithFine.getAmountOfPaid());
+        assertEquals("32.1", resultResponseWithFine.getArticleOfKoap());
+    }
+
+
+    @Test
+    void getNotNullJsonResponseByValidJsonRequestTest() throws Exception {
         Mockito.when(responseRepository.findByINN(any(Long.class))).thenReturn(response);
 
         MvcResult result = mockMvc.perform(post("/api/v1/smv/legal_person/response").
@@ -132,7 +209,7 @@ public class LegalPersonControllerUnitTest {
 
 
     @Test
-    void getResponseWithFineByStIsNull() throws Exception {
+    void getNullResponseTest() throws Exception {
 
         Mockito.when(responseRepository.findByINN(any(Long.class))).thenReturn(null);
 
@@ -140,11 +217,25 @@ public class LegalPersonControllerUnitTest {
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(request))).
                 andExpect(status().is(HttpStatus.NOT_FOUND.value()));
+
+        JAXBContext context = JAXBContext.newInstance(LegalPersonRequest.class);
+        Marshaller mar = context.createMarshaller();
+        mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        @Cleanup StringWriter sw = new StringWriter();
+        mar.marshal(request, sw);
+        String xmlRequest = sw.toString();
+
+        mockMvc.perform(post("/api/v1/smv/legal_person/response").
+                        contentType(MediaType.APPLICATION_XML_VALUE).
+                        accept(MediaType.APPLICATION_XML_VALUE).
+                        content(xmlRequest)).
+                andExpect(status().is(HttpStatus.NOT_FOUND.value()));
+
     }
 
 
     @Test
-    void deleteResponseWithFineByValidId() throws Exception {
+    void deleteResponseByValidId() throws Exception {
 
         int kol = 1;
         UUID id = UUID.randomUUID();
@@ -159,7 +250,7 @@ public class LegalPersonControllerUnitTest {
 
 
     @Test
-    void deleteResponseWithFineByInValidId() throws Exception {
+    void deleteResponseByInValidId() throws Exception {
 
         int kol = 0;
         UUID id = UUID.randomUUID();
