@@ -21,7 +21,8 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Controller for natural person requests", description = "accepts a request from natural person and returns a response with a fine")
+@Tag(name = "Controller for natural person requests", description = "accepts a natural person request from adapter service,saves request, " +
+        "returns a response with a fine then delete response")
 @RequestMapping("api/v1/smv/natural_person")
 public class SmvNaturalPersonController {
 
@@ -33,13 +34,16 @@ public class SmvNaturalPersonController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "202", description = "The request was successfully saved",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = NaturalPersonRequest.class))}),
+                            schema = @Schema(implementation = NaturalPersonRequest.class)),
+                            @Content(mediaType = "application/xml",
+                                    schema = @Schema(implementation = NaturalPersonRequest.class))}),
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
             @ApiResponse(responseCode = "500", description = "The problem with server", content = @Content)})
 
     @PostMapping("/request")
     public ResponseEntity<NaturalPersonRequest> saveRequest(@RequestBody(description = "natural person request", required = true,
-            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = NaturalPersonRequest.class))})
+            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = NaturalPersonRequest.class)),
+                    @Content(mediaType = "application/xml", schema = @Schema(implementation = NaturalPersonRequest.class))})
                                                             @Valid @org.springframework.web.bind.annotation.RequestBody NaturalPersonRequest request) {
 
         return naturalPersonRequestService.saveRequestForFine(request);
@@ -51,14 +55,17 @@ public class SmvNaturalPersonController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The response is found",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = NaturalPersonResponse.class))}),
+                            schema = @Schema(implementation = NaturalPersonResponse.class)),
+                            @Content(mediaType = "application/xml",
+                                    schema = @Schema(implementation = NaturalPersonResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
             @ApiResponse(responseCode = "404", description = "The response is not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "The problem with server", content = @Content)})
 
     @PostMapping("/response")
     public ResponseEntity<NaturalPersonResponse> getResponse(@RequestBody(description = "natural person request", required = true,
-            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = NaturalPersonRequest.class))})
+            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = NaturalPersonRequest.class)),
+                    @Content(mediaType = "application/xml", schema = @Schema(implementation = NaturalPersonRequest.class))})
                                                              @Valid @org.springframework.web.bind.annotation.RequestBody NaturalPersonRequest request) {
 
         return naturalPersonResponseService.getResponseForFine(request.getSts());
@@ -69,7 +76,7 @@ public class SmvNaturalPersonController {
 
     @Operation(summary = "delete response by id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "The response was successfully deleted"),
+            @ApiResponse(responseCode = "200", description = "The response was successfully deleted", content = @Content),
             @ApiResponse(responseCode = "405", description = "The response wasn't deleted by this id", content = @Content),
             @ApiResponse(responseCode = "500", description = "The problem with server", content = @Content)})
 

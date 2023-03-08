@@ -18,7 +18,7 @@ public class SwaggerConfig {
                         new Info()
                                 .title("SMV SERVICE")
                                 .version("1.0.0")
-                                .description("The smv service interacts with the adapter service, accepts the request, " +
+                                .description("The smv service interacts with the adapter service, accepts the request, save the request, create a response " +
                                         "then returns a response with a fine")
                                 .contact(new Contact().name("Ann"))
 
